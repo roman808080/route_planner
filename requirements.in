@@ -1,0 +1,6 @@
+fastapi
+gunicorn
+uvicorn[standard]
+pytest
+pytest-asyncio
+requests
