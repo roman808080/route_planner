@@ -14,4 +14,3 @@ services:
       - 8089:8089
     volumes:
       - ./locust:/locust
-
