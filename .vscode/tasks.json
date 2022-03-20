@@ -57,6 +57,24 @@
                 "down",
             ],
             "problemMatcher": [],
-        }
+        },
+        {
+            "label": "Sleep For Synchronization",
+            "type": "shell",
+            "command": "sleep",
+            "args": [
+                "0.5",
+            ],
+            "problemMatcher": [],
+        },
+        {
+            "label": "Build For Debug",
+            "type": "shell",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Docker Compose Up Dev",
+                "Sleep For Synchronization",
+            ],
+        },
     ]
 }

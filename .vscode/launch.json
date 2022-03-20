@@ -18,7 +18,9 @@
                     "remoteRoot": "."
                 }
             ],
-            "justMyCode": true
+            "justMyCode": false,
+            "preLaunchTask": "Build For Debug",
+            "postDebugTask": "Docker Compose Stop Dev",
         }
     ]
 }
