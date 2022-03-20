@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from models import RouteRequest, RouteResponse, TestResponse
+from models import RouteRequest, RouteResponse, TestResponse, City
 from sqlalchemy import text
 
 from db_utils import database
@@ -19,6 +19,16 @@ async def startup():
 async def shutdown():
     """Executed on server's shutdown"""
     await database.disconnect()
+
+
+@app.post("/admin/city")
+async def add_city(city: City):
+    query = city.insert(
+        values={"name": city.name,
+                "lattitude": city.lattitude,
+                "longitude": city.longitude})
+    last_record_id = await database.execute(query=query)
+    return {**city.dict(), "id": last_record_id}
 
 
 @app.post("/route")

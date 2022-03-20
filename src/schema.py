@@ -11,7 +11,7 @@ cities: sqlalchemy.sql.schema.Table = sqlalchemy.Table(
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
     sqlalchemy.Column("name", sqlalchemy.String(length=100)),
-    sqlalchemy.Column("latitude", sqlalchemy.Float),
+    sqlalchemy.Column("lattitude", sqlalchemy.Float),
     sqlalchemy.Column("longitude", sqlalchemy.Float),
 )
 
