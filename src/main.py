@@ -6,7 +6,7 @@ app = FastAPI()
 
 
 @app.post("/route")
-def plan_route(params: RouteRequest):
+async def plan_route(params: RouteRequest):
     raise NotImplementedError()
     return RouteResponse(
         distance_km=168.43,
@@ -17,7 +17,7 @@ def plan_route(params: RouteRequest):
 
 
 @app.get("/test")
-def get_test_response():
+async def get_test_response():
     return TestResponse(test_response="Everyting is ok")
 
 
