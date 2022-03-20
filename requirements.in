@@ -4,3 +4,5 @@ uvicorn[standard]
 pytest
 pytest-asyncio
 requests
+sqlalchemy
+databases
