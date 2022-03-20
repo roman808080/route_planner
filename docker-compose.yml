@@ -8,6 +8,8 @@ services:
     volumes:
       - ./src/:/app
       - ./tests:/tests
+    depends_on:
+      - db
 
   perf-test:
     image: locustio/locust:2.8.3
@@ -16,6 +18,9 @@ services:
       - 8089:8089
     volumes:
       - ./locust:/locust
+    depends_on:
+      - db
+      - api
 
   db:
     image: postgres
