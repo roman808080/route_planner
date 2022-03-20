@@ -1,5 +1,6 @@
 version: "3.9"
 services:
+
   api:
     build: .
     ports:
@@ -7,6 +8,7 @@ services:
     volumes:
       - ./src/:/app
       - ./tests:/tests
+
   perf-test:
     image: locustio/locust:2.8.3
     command: -f /locust/locustfile.py -H http://api:8000 -u 10 -r 1
@@ -14,3 +16,17 @@ services:
       - 8089:8089
     volumes:
       - ./locust:/locust
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: routes
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
