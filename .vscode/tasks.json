@@ -19,6 +19,22 @@
             }
         },
         {
+            "label": "Docker Compose Up Dev Rebuild",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "compose",
+                "-f",
+                "docker-compose-dev.yml",
+                "up",
+                "-d",
+                "--force-recreate",
+                "--no-deps",
+                "--build",
+            ],
+            "problemMatcher": [],
+        },
+        {
             "label": "Docker Compose Stop Dev",
             "type": "shell",
             "command": "docker",
