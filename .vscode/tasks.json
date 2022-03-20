@@ -1,0 +1,46 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Docker Compose Up Dev",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "compose",
+                "-f",
+                "docker-compose-dev.yml",
+                "up",
+                "-d",
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Docker Compose Stop Dev",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "compose",
+                "-f",
+                "docker-compose-dev.yml",
+                "stop",
+            ],
+            "problemMatcher": [],
+        },
+        {
+            "label": "Docker Compose Down Dev",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "compose",
+                "-f",
+                "docker-compose-dev.yml",
+                "down",
+            ],
+            "problemMatcher": [],
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src/:/app
+      - ./tests:/tests
+  perf-test:
+    image: locustio/locust:2.8.3
+    command: -f /locust/locustfile.py -H http://api:8000 -u 10 -r 1
+    ports:
+      - 8089:8089
+    volumes:
+      - ./locust:/locust
+
