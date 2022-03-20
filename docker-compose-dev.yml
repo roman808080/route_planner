@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile.Dev
     ports:
       - "8000:8000"
+      - "5678:5678"
     volumes:
       - ./src/:/app
       - ./tests:/tests
