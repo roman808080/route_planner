@@ -1,8 +1,24 @@
 from fastapi import FastAPI
 
 from models import RouteRequest, RouteResponse, TestResponse
+from sqlalchemy import text
+
+from db_utils import database
+from schema import cities
 
 app = FastAPI()
+
+
+@app.on_event("startup")
+async def startup():
+    """Executed on server's startup"""
+    await database.connect()
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    """Executed on server's shutdown"""
+    await database.disconnect()
 
 
 @app.post("/route")

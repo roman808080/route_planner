@@ -6,3 +6,5 @@ pytest-asyncio
 requests
 sqlalchemy
 databases
+asyncpg
+psycopg2-binary
