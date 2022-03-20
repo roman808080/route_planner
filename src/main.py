@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from models import RouteRequest, RouteResponse
+from models import RouteRequest, RouteResponse, TestResponse
 
 app = FastAPI()
 
@@ -13,3 +13,7 @@ def plan_route(params: RouteRequest):
         duration_minutes=95,
         route=["Ostrava", "Bilovec", "Hranice", "Olomouc", "Prostejov", "Vyskov", "Brno"],
     )
+
+@app.get("/test")
+def get_test_response():
+    return TestResponse(test_response="Everyting is ok")

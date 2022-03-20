@@ -20,6 +20,9 @@ class RouteResponse(BaseModel):
     duration_minutes: float
     route: List[str]
 
+class TestResponse(BaseModel):
+    test_response: str
+
 
 class City(BaseModel):
     name: str
