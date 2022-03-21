@@ -4,7 +4,7 @@ from models import RouteRequest, RouteResponse, TestResponse, City
 from sqlalchemy import text
 
 from db_utils import database
-from schema import cities
+from schema import cities, create_all_tables
 
 app = FastAPI()
 
@@ -12,6 +12,7 @@ app = FastAPI()
 @app.on_event("startup")
 async def startup():
     """Executed on server's startup"""
+    await create_all_tables()
     await database.connect()
 
 
