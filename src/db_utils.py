@@ -3,6 +3,10 @@ from urllib.parse import quote_plus
 from databases import Database
 
 
+db_url = None
+database = None
+
+
 def get_db_settings(host='db', name='routes', port=5432,
                     user='admin', password='example'):
     host = os.environ.get('DB_HOST', host)
@@ -21,8 +25,19 @@ def create_db_url(host='db', name='routes', port=5432,
     return f"postgresql+asyncpg://{user}:{password}@{host}:{str(port)}/{name}"
 
 
-db_url = create_db_url(**get_db_settings())
+def create_database_connection(db_url, min_size=5, max_size=20):
+    return Database(db_url, min_size=min_size, max_size=max_size)
 
-database: Database = Database(db_url,
-                              min_size=5,
-                              max_size=20)
+
+def update_db_url(new_db_url):
+    global db_url
+    db_url = new_db_url
+
+
+def update_database_connection(new_database):
+    global database
+    database = new_database
+
+
+db_url = create_db_url(**get_db_settings())
+database = create_database_connection(db_url=db_url)

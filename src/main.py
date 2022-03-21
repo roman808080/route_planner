@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 
 from models import RouteRequest, RouteResponse, TestResponse, City
-from sqlalchemy import text
 
 from db_utils import database
 from schema import cities, create_all_tables
