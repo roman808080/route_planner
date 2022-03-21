@@ -97,6 +97,8 @@
             "args": [
                 "compose",
                 "run",
+                "-e",
+                "PATHS_FROM_ECLIPSE_TO_PYTHON=[['${workspaceFolder}/tests', '/tests']]",
                 "-d",
                 "--publish",
                 "5679:5679",
