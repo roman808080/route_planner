@@ -23,7 +23,7 @@ async def shutdown():
 
 @app.post("/admin/city")
 async def add_city(city: City):
-    query = city.insert(
+    query = cities.insert(
         values={"name": city.name,
                 "lattitude": city.lattitude,
                 "longitude": city.longitude})
