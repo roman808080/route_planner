@@ -13,10 +13,6 @@
                 "-d",
             ],
             "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
         },
         {
             "label": "Docker Compose Up Dev Rebuild",
@@ -33,6 +29,10 @@
                 "--build",
             ],
             "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         },
         {
             "label": "Docker Compose Stop Dev",
