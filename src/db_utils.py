@@ -1,16 +1,27 @@
 import os
-import urllib.parse
-
+from urllib.parse import quote_plus
 from databases import Database
 
-# Get env variables for db connection
-db_host = os.environ.get('db_host', 'db')
-db_name = os.environ.get('db_name', 'routes')
-db_port = urllib.parse.quote_plus(str(os.environ.get('db_port', '5432')))
-db_user = urllib.parse.quote_plus(str(os.environ.get('db_user', 'admin')))
-db_pass = urllib.parse.quote_plus(str(os.environ.get('db_pass', 'example')))
 
-db_url = f"postgresql+asyncpg://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
+def get_db_settings(host='db', name='routes', port=5432,
+                    user='admin', password='example'):
+    host = os.environ.get('DB_HOST', host)
+    name = os.environ.get('DB_NAME', name)
+
+    port = int(os.environ.get('DB_PORT', port))
+    user = quote_plus(str(os.environ.get('DB_USER', user)))
+    password = quote_plus(str(os.environ.get('DB_PASSWORD', password)))
+
+    return {'host': host, 'name': name, 'port': port, 'user': user,
+            'password': password}
+
+
+def create_db_url(host='db', name='routes', port=5432,
+                  user='admin', password='example'):
+    return f"postgresql+asyncpg://{user}:{password}@{host}:{str(port)}/{name}"
+
+
+db_url = create_db_url(**get_db_settings())
 
 database: Database = Database(db_url,
                               min_size=5,
