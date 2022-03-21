@@ -4,5 +4,5 @@ from main import app
 
 
 @pytest.fixture
-def client():
+async def client():
     return TestClient(app)
