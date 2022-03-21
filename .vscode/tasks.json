@@ -76,5 +76,50 @@
                 "Sleep For Synchronization",
             ],
         },
+        {
+            "label": "Run Tests",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "compose",
+                "run",
+                "--rm",
+                "api",
+                "pytest",
+                "-v",
+                "/tests"
+            ]
+        },
+        {
+            "label": "Prepare Tests For Debug",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "compose",
+                "run",
+                "-d",
+                "--publish",
+                "5679:5679",
+                "--rm",
+                "api",
+                "python",
+                "/tmp/debugpy",
+                "--wait-for-client",
+                "--listen",
+                "0.0.0.0:5679",
+                "/tests/run_pytest.py",
+                "-v",
+                "/tests",
+            ]
+        },
+                {
+            "label": "Run Tests For Debug",
+            "type": "shell",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Prepare Tests For Debug",
+                "Sleep For Synchronization",
+            ],
+        },
     ]
 }

@@ -21,6 +21,23 @@
             "justMyCode": false,
             "preLaunchTask": "Build For Debug",
             "postDebugTask": "Docker Compose Stop Dev",
-        }
+        },
+        {
+            "name": "Python: Remote Attach Tests",
+            "type": "python",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5679
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/src",
+                    "remoteRoot": "."
+                }
+            ],
+            "justMyCode": false,
+            "preLaunchTask": "Run Tests For Debug",
+        },
     ]
 }
