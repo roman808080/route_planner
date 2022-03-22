@@ -1,11 +1,9 @@
+from importlib.metadata import metadata
 import os
 from urllib.parse import quote_plus
 from databases import Database
 from sqlalchemy.ext.asyncio import create_async_engine
-
-
-db_url = None
-database = None
+from schema import metadata
 
 
 def get_db_settings(host='db', name='routes', port=5432,
@@ -26,16 +24,55 @@ def create_db_url(host='db', name='routes', port=5432,
     return f"postgresql+asyncpg://{user}:{password}@{host}:{str(port)}/{name}"
 
 
-def create_database_connection(db_url, min_size=5, max_size=20):
-    return Database(db_url, min_size=min_size, max_size=max_size)
+class Db:
+    __shared = None
 
+    def __init__(self, db_url=None, db_settings={}, metadata=None):
 
-db_url = create_db_url(**get_db_settings())
-database = create_database_connection(db_url=db_url)
+        if Db.__shared is not None:
+            raise Exception('This class is singleton')
 
-async_engine = create_async_engine(db_url, echo=True)
+        self._db_url = db_url
+        self._db_settings = db_settings
+        self._metadata = metadata
 
+        self._database = None
 
-async def create_all_tables(async_engine, metadata):
-    async with async_engine.begin() as conn:
-        await conn.run_sync(metadata.create_all)
+        if self._db_url is None:
+            self._db_url = create_db_url(**get_db_settings())
+
+        Db.__shared = self
+
+    @staticmethod
+    def get_instance():
+        if Db.__shared is None:
+            Db()
+
+        return Db.__shared
+
+    async def _create_all_tables(self):
+        async_engine = create_async_engine(self._db_url, echo=True)
+
+        metadata_for_tables = None
+        if self._metadata is None:
+            metadata_for_tables = metadata
+
+        async with async_engine.begin() as conn:
+            await conn.run_sync(metadata_for_tables.create_all)
+
+    def _create_database(self):
+        self._database = Database(self._db_url, **self._db_settings)
+
+    async def up(self):
+        await self._create_all_tables()
+        self._create_database()
+        await self._database.connect()
+
+    async def down(self):
+        if self._database is not None:
+            await self._database.disconnect()
+
+    def get_database(self):
+        if self._database is None:
+            raise Exception('Database is not initialized.')
+        return self._database

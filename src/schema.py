@@ -2,8 +2,6 @@ import sqlalchemy
 from sqlalchemy import MetaData
 from sqlalchemy.sql import schema
 
-from db_utils import db_url
-
 metadata: MetaData = sqlalchemy.MetaData()
 
 cities: schema.Table = sqlalchemy.Table(
