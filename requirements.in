@@ -6,5 +6,6 @@ pytest-asyncio
 requests
 sqlalchemy
 databases
+databases[sqlite]
 asyncpg
 psycopg2-binary
