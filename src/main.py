@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from models import RouteRequest, RouteResponse, TestResponse, City
 
-from db_utils import database, create_all_tables
+from db_utils import database, async_engine, create_all_tables
 from schema import cities, metadata
 
 app = FastAPI()
@@ -11,7 +11,7 @@ app = FastAPI()
 @app.on_event("startup")
 async def startup():
     """Executed on server's startup"""
-    await create_all_tables(metadata=metadata)
+    await create_all_tables(async_engine=async_engine, metadata=metadata)
     await database.connect()
 
 

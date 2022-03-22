@@ -36,6 +36,6 @@ database = create_database_connection(db_url=db_url)
 async_engine = create_async_engine(db_url, echo=True)
 
 
-async def create_all_tables(metadata):
+async def create_all_tables(async_engine, metadata):
     async with async_engine.begin() as conn:
         await conn.run_sync(metadata.create_all)
