@@ -23,6 +23,7 @@ async def shutdown():
 
 @app.post("/admin/city")
 async def add_city(city: City):
+    """Add a city to the database"""
     query = cities.insert(
         values={"name": city.name,
                 "lattitude": city.lattitude,
@@ -33,6 +34,7 @@ async def add_city(city: City):
 
 @app.post("/route")
 async def plan_route(params: RouteRequest):
+    """Plan a route between cities"""
     raise NotImplementedError()
     return RouteResponse(
         distance_km=168.43,
@@ -44,6 +46,7 @@ async def plan_route(params: RouteRequest):
 
 @app.get("/test")
 async def get_test_response():
+    """A test get request to make sure that everything is okay."""
     return TestResponse(test_response="Everyting is ok")
 
 
