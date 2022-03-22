@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from models import RouteRequest, RouteResponse, TestResponse, City
 
-from db_utils import Db
+from db import db_manager
 from schema import cities
 
 app = FastAPI()
@@ -11,15 +11,13 @@ app = FastAPI()
 @app.on_event("startup")
 async def startup():
     """Executed on server's startup"""
-    db = Db.get_instance()
-    await db.up()
+    await db_manager.up()
 
 
 @app.on_event("shutdown")
 async def shutdown():
     """Executed on server's shutdown"""
-    db = Db.get_instance()
-    await db.down()
+    await db_manager.down()
 
 
 @app.post("/admin/city")
@@ -30,7 +28,7 @@ async def add_city(city: City):
                 "lattitude": city.lattitude,
                 "longitude": city.longitude})
 
-    database = Db.get_instance().get_database()
+    database = db_manager.get_database()
     last_record_id = await database.execute(query=query)
 
     return {**city.dict(), "id": last_record_id}

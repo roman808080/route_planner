@@ -1,19 +1,17 @@
 import pytest
 from tempfile import NamedTemporaryFile
-from sqlalchemy.ext.asyncio import create_async_engine
 
-from db_utils import Db
-from databases import Database
+from db import db_manager
 from schema import metadata, cities
 
 
 async def test_sqllite_db():
     with NamedTemporaryFile() as temporary_db_file:
         db_url = 'sqlite+aiosqlite:///' + temporary_db_file.name
-        db = Db(db_url=db_url)
-        await db.up()
+        db_manager.reset(db_url=db_url)
+        await db_manager.up()
 
-        temporary_db = db.get_database()
+        temporary_db = db_manager.get_database()
 
         tables_query = "SELECT * FROM sqlite_master where type='table';"
         tables = await temporary_db.fetch_all(query=tables_query)

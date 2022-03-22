@@ -24,14 +24,11 @@ def create_db_url(host='db', name='routes', port=5432,
     return f"postgresql+asyncpg://{user}:{password}@{host}:{str(port)}/{name}"
 
 
-class Db:
-    __shared = None
-
+class DbManager:
     def __init__(self, db_url=None, db_settings={}, metadata=None):
+        self.reset(db_url=db_url, db_settings=db_settings, metadata=metadata)
 
-        if Db.__shared is not None:
-            raise Exception('This class is singleton')
-
+    def reset(self, db_url=None, db_settings={}, metadata=None):
         self._db_url = db_url
         self._db_settings = db_settings
         self._metadata = metadata
@@ -40,15 +37,6 @@ class Db:
 
         if self._db_url is None:
             self._db_url = create_db_url(**get_db_settings())
-
-        Db.__shared = self
-
-    @staticmethod
-    def get_instance():
-        if Db.__shared is None:
-            Db()
-
-        return Db.__shared
 
     async def _create_all_tables(self):
         async_engine = create_async_engine(self._db_url, echo=True)
@@ -71,8 +59,12 @@ class Db:
     async def down(self):
         if self._database is not None:
             await self._database.disconnect()
+        self._database = None
 
     def get_database(self):
         if self._database is None:
             raise Exception('Database is not initialized.')
         return self._database
+
+
+db_manager = DbManager()
