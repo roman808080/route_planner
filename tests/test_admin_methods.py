@@ -43,6 +43,7 @@ async def test_delete_a_city(client, sqlite_database):
 
     assert len(rows) == 0
 
+
 async def test_delete_a_non_existing_city(client, sqlite_database):
     response = client.delete("/city/London")
 
@@ -70,3 +71,11 @@ async def test_update_a_city(client, sqlite_database):
 
     assert row['lattitude'] == 0
     assert row['longitude'] == 0
+
+
+async def test_update_a_city_which_does_not_exist(client, sqlite_database):
+    updated_london = City(name="London", lattitude=0, longitude=0)
+    response = client.put("/city/London", json=updated_london.dict())
+
+    assert response.status_code == 404
+    assert response.json()['detail'] == 'Item not found'
