@@ -29,15 +29,5 @@ def create_database_connection(db_url, min_size=5, max_size=20):
     return Database(db_url, min_size=min_size, max_size=max_size)
 
 
-def update_db_url(new_db_url):
-    global db_url
-    db_url = new_db_url
-
-
-def update_database_connection(new_database):
-    global database
-    database = new_database
-
-
 db_url = create_db_url(**get_db_settings())
 database = create_database_connection(db_url=db_url)
