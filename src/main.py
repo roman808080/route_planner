@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 from models import RouteRequest, RouteResponse, City, CityResponse
 
@@ -33,7 +33,7 @@ async def is_city_in_table(name):
 
 @app.post("/city")
 async def add_city(city: City):
-    """Add a city to the database"""
+    """Add a city to the table"""
 
     if await is_city_in_table(name=city.name):
         return CityResponse(status='success')
@@ -50,14 +50,36 @@ async def add_city(city: City):
 
 
 @app.delete("/city/{name}")
-async def delete_city(name):
-    """Delete a city to the database"""
+async def delete_city(name: str):
+    """Delete a city in the table"""
     query = cities.delete().where(cities.c.name == name)
 
     database = db_manager.get_database()
     await database.execute(query=query)
 
     return CityResponse(status='deleted')
+
+
+@app.put("/city/{name}")
+async def update_city(name: str, city: City):
+    """Update a city in the table"""
+
+    query = cities.select().where(cities.c.name == name)
+    database = db_manager.get_database()
+
+    row = await database.fetch_one(query=query)
+    if row is None:
+        raise HTTPException(status_code=404,
+                            detail="Item not found",
+                            headers={
+                                "X-Error": f"Request asked for city name: [{name}]"})
+
+    query = cities.update().where(cities.c.name == name).values(name=city.name,
+                                                                lattitude=city.lattitude,
+                                                                longitude=city.longitude)
+    await database.execute(query=query)
+
+    return CityResponse(status='updated')
 
 
 @app.post("/route")

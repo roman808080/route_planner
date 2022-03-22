@@ -42,3 +42,20 @@ async def test_delete_a_city(client, sqlite_database):
     rows = await sqlite_database.fetch_all(query=query)
 
     assert len(rows) == 0
+
+
+async def test_update_a_city(client, sqlite_database):
+    await add_london(client=client)
+    await check_amount_of_recrods_in_cities_is_1(sqlite_database=sqlite_database)
+
+    updated_london = City(name="London", lattitude=0, longitude=0)
+    response = client.put("/city/London", json=updated_london.dict())
+
+    city_response = CityResponse(**response.json())
+    assert city_response.status == 'updated'
+
+    query = cities.select().where(cities.c.name == 'London')
+    row = await sqlite_database.fetch_one(query=query)
+
+    assert row['lattitude'] == 0
+    assert row['longitude'] == 0
