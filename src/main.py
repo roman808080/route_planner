@@ -20,9 +20,24 @@ async def shutdown():
     await db_manager.down()
 
 
+async def is_city_in_table(name):
+    query = cities.select().where(cities.c.name == name)
+
+    database = db_manager.get_database()
+    rows = await database.fetch_all(query=query)
+    if len(rows) > 0:
+        return True
+
+    return False
+
+
 @app.post("/city")
 async def add_city(city: City):
     """Add a city to the database"""
+
+    if await is_city_in_table(name=city.name):
+        return CityResponse(status='success')
+
     query = cities.insert(
         values={"name": city.name,
                 "lattitude": city.lattitude,
