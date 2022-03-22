@@ -25,4 +25,4 @@ async def test_reset(temp_file):
 
     assert last_record_id == 1
 
-    await temporary_db.disconnect()
+    await db_manager.down()
