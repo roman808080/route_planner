@@ -1,10 +1,9 @@
 import pytest
 
-from db import db_manager
 from schema import cities
 
 
-async def test_reset(sqlite_database):
+async def test_database(sqlite_database):
     tables_query = "SELECT * FROM sqlite_master where type='table';"
     tables = await sqlite_database.fetch_all(query=tables_query)
 
