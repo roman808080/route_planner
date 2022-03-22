@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from models import RouteRequest, RouteResponse, TestResponse, City
+from models import RouteRequest, RouteResponse, City, CityResponse
 
 from db import db_manager
 from schema import cities
@@ -29,9 +29,9 @@ async def add_city(city: City):
                 "longitude": city.longitude})
 
     database = db_manager.get_database()
-    last_record_id = await database.execute(query=query)
+    await database.execute(query=query)
 
-    return {**city.dict(), "id": last_record_id}
+    return CityResponse(status='success')
 
 
 @app.post("/route")
@@ -44,12 +44,6 @@ async def plan_route(params: RouteRequest):
         route=["Ostrava", "Bilovec", "Hranice",
                "Olomouc", "Prostejov", "Vyskov", "Brno"],
     )
-
-
-@app.get("/test")
-async def get_test_response():
-    """A test get request to make sure that everything is okay."""
-    return TestResponse(test_response="Everyting is ok")
 
 
 if __name__ == "__main__":

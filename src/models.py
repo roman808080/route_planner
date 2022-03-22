@@ -9,6 +9,12 @@ class PlanningStrategy(str, Enum):
     shortest = "shortest"
 
 
+class CityStatus(str, Enum):
+    success = 'success'
+    failed = 'failed'
+    updated = 'updated'
+
+
 class RouteRequest(BaseModel):
     start: str
     destination: str
@@ -21,14 +27,16 @@ class RouteResponse(BaseModel):
     route: List[str]
 
 
-class TestResponse(BaseModel):
-    test_response: str
-
-
 class City(BaseModel):
     name: str
-    lattitude: float = Field(..., ge=-90, le=90)  # negative values stands for souther hemisphere
-    longitude: float = Field(..., ge=-180, le=180)  # negative values stands for western hemisphere
+    # negative values stands for souther hemisphere
+    lattitude: float = Field(..., ge=-90, le=90)
+    # negative values stands for western hemisphere
+    longitude: float = Field(..., ge=-180, le=180)
+
+
+class CityResponse(BaseModel):
+    status: CityStatus
 
 
 class Road(BaseModel):
