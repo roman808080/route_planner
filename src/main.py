@@ -49,6 +49,17 @@ async def add_city(city: City):
     return CityResponse(status='success')
 
 
+@app.delete("/city/{name}")
+async def delete_city(name):
+    """Delete a city to the database"""
+    query = cities.delete().where(cities.c.name == name)
+
+    database = db_manager.get_database()
+    await database.execute(query=query)
+
+    return CityResponse(status='deleted')
+
+
 @app.post("/route")
 async def plan_route(params: RouteRequest):
     """Plan a route between cities"""

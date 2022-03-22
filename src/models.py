@@ -13,6 +13,7 @@ class CityStatus(str, Enum):
     success = 'success'
     failed = 'failed'
     updated = 'updated'
+    deleted = 'deleted'
 
 
 class RouteRequest(BaseModel):
