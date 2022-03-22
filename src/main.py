@@ -20,7 +20,7 @@ async def shutdown():
     await db_manager.down()
 
 
-@app.post("/admin/city")
+@app.post("/city")
 async def add_city(city: City):
     """Add a city to the database"""
     query = cities.insert(

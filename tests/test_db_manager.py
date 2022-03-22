@@ -1,11 +1,11 @@
 import pytest
 from tempfile import NamedTemporaryFile
 
-from db import db_manager
-from schema import metadata, cities
+from db import db_manager, DbManager
+from schema import cities
 
 
-async def test_sqllite_db():
+async def test_reset():
     with NamedTemporaryFile() as temporary_db_file:
         db_url = 'sqlite+aiosqlite:///' + temporary_db_file.name
         db_manager.reset(db_url=db_url)
