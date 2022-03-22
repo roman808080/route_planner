@@ -1,6 +1,7 @@
 import os
 from urllib.parse import quote_plus
 from databases import Database
+from sqlalchemy.ext.asyncio import create_async_engine
 
 
 db_url = None
@@ -31,3 +32,10 @@ def create_database_connection(db_url, min_size=5, max_size=20):
 
 db_url = create_db_url(**get_db_settings())
 database = create_database_connection(db_url=db_url)
+
+async_engine = create_async_engine(db_url, echo=True)
+
+
+async def create_all_tables(metadata):
+    async with async_engine.begin() as conn:
+        await conn.run_sync(metadata.create_all)
