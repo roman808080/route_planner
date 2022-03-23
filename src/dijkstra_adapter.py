@@ -1,12 +1,13 @@
 from dijkstra import Graph, dijkstra_algorithm
 from db import get_city_id, get_city_ids, db_manager, get_city_name
 from schema import cities, roads
+from models import PlanningStrategy
 
 
 class DijkstraAdapter:
     _strategy_map = {
-        'fastest': 'duration_minutes',
-        'shortest': 'distance_km'
+        PlanningStrategy.fastest: 'duration_minutes',
+        PlanningStrategy.shortest: 'distance_km'
     }
 
     def __init__(self, start_city, target_city, strategy):
