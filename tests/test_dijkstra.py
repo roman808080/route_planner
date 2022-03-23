@@ -1,32 +1,20 @@
 from dijkstra import Graph, dijkstra_algorithm
 from models import City, CityResponse, Road, RoadResponse
-from db import get_city_id, db_manager
+from db import get_city_id, get_city_name
 from schema import cities, roads
-
-
-async def get_city_name(city_id: int):
-    """Get a city name"""
-    query = cities.select().where(cities.c.id == city_id)
-
-    database = db_manager.get_database()
-    row = await database.fetch_one(query=query)
-
-    if row is None:
-        return None
-
-    return row.name
 
 
 async def convert_nodes_to_readable(nodes):
     readable_nodes = []
     for node in nodes:
         readable_nodes.append(await get_city_name(city_id=node))
-    
+
     return readable_nodes
 
 
 def get_shortest_path_for_target_node(shortest_paths, target_node):
     return shortest_paths[target_node]
+
 
 def get_path(previous_nodes, start_node, target_node):
     path = []
@@ -135,10 +123,11 @@ async def test_dijkstra_algorithm(client, sqlite_database):
 
     graph = Graph(converted_nodes, init_graph)
     previous_nodes, shortest_paths = dijkstra_algorithm(graph=graph,
-                                                       start_node=start_node)
+                                                        start_node=start_node)
 
-    node_path = get_path(previous_nodes, start_node=start_node, target_node=target_node)
-    
+    node_path = get_path(
+        previous_nodes, start_node=start_node, target_node=target_node)
+
     readable_path = await convert_nodes_to_readable(node_path)
     result = " -> ".join(readable_path)
 

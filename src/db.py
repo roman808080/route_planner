@@ -58,6 +58,19 @@ async def get_city_id(name: str):
     return row.id
 
 
+async def get_city_name(city_id: int):
+    """Get a city name"""
+    query = cities.select().where(cities.c.id == city_id)
+
+    database = db_manager.get_database()
+    row = await database.fetch_one(query=query)
+
+    if row is None:
+        return None
+
+    return row.name
+
+
 async def delete_depended_roads(city_name: str):
     city_id = await get_city_id(name=city_name)
     query = roads.delete().where(or_(roads.c.first_city_id == city_id,
