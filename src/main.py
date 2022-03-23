@@ -123,7 +123,7 @@ async def add_road(road: Road):
         raise HTTPException(status_code=http.HTTPStatus.CONFLICT,
                             detail=f"The road {road.first_city_name}->{road.second_city_name} already exists",
                             headers={
-                                "X-Error": f"Request asked for city name: [{road.first_city_name}->{road.second_city_name}]"})
+                                "X-Error": f"Request asked for road name: [{road.first_city_name}->{road.second_city_name}]"})
 
     query = roads.insert(
         values={"first_city_id": first_city_id,
@@ -153,7 +153,7 @@ async def update_road(first_city: str, second_city: str, road: Road):
         raise HTTPException(status_code=http.HTTPStatus.NOT_FOUND,
                             detail="Item not found",
                             headers={
-                                "X-Error": f"Request asked for city name: [{road.first_city_name}->{road.second_city_name}]"})
+                                "X-Error": f"Request asked for road name: [{road.first_city_name}->{road.second_city_name}]"})
 
     query = roads.update().where(roads.c.first_city_id == first_city_id,
                                   roads.c.second_city_id == second_city_id).values(first_city_id=first_city_id,
