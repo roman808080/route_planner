@@ -149,3 +149,36 @@ async def test_add_duplication_road(client, sqlite_database):
 
     expected_detail = 'The road London->Birmingham already exists'
     assert response.json()['detail'] == expected_detail
+
+
+async def test_update_road(client, sqlite_database):
+    await add_london(client=client)
+
+    city = City(name="Birmingham", lattitude=52.489471, longitude=-1.898575)
+    response = client.post("/city", json=city.dict())
+
+    city_response = CityResponse(**response.json())
+    assert city_response.status == 'success'
+
+    road = Road(first_city_name="London", second_city_name=city.name,
+                distance_km=163, duration_minutes=85)
+    response = client.post("/road", json=road.dict())
+
+    road_response = RoadResponse(**response.json())
+    assert road_response.status == 'success'
+
+    query = roads.select()
+    rows = await sqlite_database.fetch_all(query=query)
+
+    assert len(rows) == 1
+
+    road.duration_minutes = 60
+    response = client.put("/road/London/Birmingham", json=road.dict())
+
+    road_response = RoadResponse(**response.json())
+    assert road_response.status == 'updated'
+
+    query = roads.select()
+    row = await sqlite_database.fetch_one(query=query)
+
+    assert row['duration_minutes'] == 60
