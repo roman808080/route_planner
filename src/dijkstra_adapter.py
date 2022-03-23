@@ -3,7 +3,7 @@ from db import get_city_id, get_city_ids, db_manager, get_city_name
 from schema import cities, roads
 
 
-class AdapterDijkstra:
+class DijkstraAdapter:
     _strategy_map = {
         'fastest': 'duration_minutes',
         'shortest': 'distance_km'
@@ -14,7 +14,7 @@ class AdapterDijkstra:
         self._target_city = target_city
         self._strategy = strategy
 
-        self._strategy_attr = AdapterDijkstra._strategy_map[strategy]
+        self._strategy_attr = DijkstraAdapter._strategy_map[strategy]
 
     async def get_optimal_path(self):
         nodes = await get_city_ids()
@@ -27,9 +27,9 @@ class AdapterDijkstra:
         previous_nodes, shortest_paths = dijkstra_algorithm(graph=graph,
                                                             start_node=start_node)
 
-        built_path = AdapterDijkstra._build_path(previous_nodes=previous_nodes,
+        built_path = DijkstraAdapter._build_path(previous_nodes=previous_nodes,
                                                  start_node=start_node, target_node=target_node)
-        redable_path = await AdapterDijkstra._convert_built_path_to_readable(built_path=built_path)
+        redable_path = await DijkstraAdapter._convert_built_path_to_readable(built_path=built_path)
 
         return (redable_path, shortest_paths[target_node])
 

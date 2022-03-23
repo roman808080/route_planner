@@ -1,7 +1,6 @@
-from adapter_dijkstra import AdapterDijkstra
+from dijkstra_adapter import DijkstraAdapter
 from models import City, CityResponse, Road, RoadResponse
 from db import get_city_id, get_city_name
-from schema import cities, roads
 
 
 def add_city_to_db(client, name):
@@ -63,7 +62,7 @@ async def test_dijkstra_algorithm(client, sqlite_database):
                    first_city="Rome", second_city="Athens",
                    distance=2)
     
-    adapter = AdapterDijkstra(start_city='Reykjavik', target_city='Belgrade', strategy='shortest')
+    adapter = DijkstraAdapter(start_city='Reykjavik', target_city='Belgrade', strategy='shortest')
     redable_path, shortest_path = await adapter.get_optimal_path()
 
     result = " -> ".join(redable_path)
