@@ -1,6 +1,6 @@
 import http
-from models import City, CityResponse
-from schema import cities
+from models import City, CityResponse, Road, RoadResponse
+from schema import cities, roads
 
 
 async def add_london(client):
@@ -85,3 +85,25 @@ async def test_update_a_city_which_does_not_exist(client, sqlite_database):
 
     assert response.status_code == http.HTTPStatus.NOT_FOUND
     assert response.json()['detail'] == 'Item not found'
+
+
+async def test_add_road(client, sqlite_database):
+    await add_london(client=client)
+
+    city = City(name="Birmingham", lattitude=52.489471, longitude=-1.898575)
+    response = client.post("/city", json=city.dict())
+
+    city_response = CityResponse(**response.json())
+    assert city_response.status == 'success'
+
+    road = Road(first_city_name="London", second_city_name=city.name,
+                distance_km=163, duration_minutes=85)
+    response = client.post("/road", json=road.dict())
+
+    road_response = RoadResponse(**response.json())
+    assert road_response.status == 'success'
+
+    query = roads.select()
+    rows = await sqlite_database.fetch_all(query=query)
+
+    assert len(rows) == 1

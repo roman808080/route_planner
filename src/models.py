@@ -16,6 +16,13 @@ class CityStatus(str, Enum):
     deleted = 'deleted'
 
 
+class RoadStatus(str, Enum):
+    success = 'success'
+    failed = 'failed'
+    updated = 'updated'
+    deleted = 'deleted'
+
+
 class RouteRequest(BaseModel):
     start: str
     destination: str
@@ -45,3 +52,7 @@ class Road(BaseModel):
     second_city_name: str
     distance_km: float = Field(..., gt=0)
     duration_minutes: float = Field(..., gt=0)
+
+
+class RoadResponse(BaseModel):
+    status: RoadStatus

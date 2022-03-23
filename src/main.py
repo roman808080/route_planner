@@ -1,10 +1,11 @@
 import http
 from fastapi import FastAPI, HTTPException
 
-from models import RouteRequest, RouteResponse, City, CityResponse
+from models import (RouteRequest, RouteResponse, City,
+                    CityResponse, Road, RoadResponse)
 
 from db import db_manager
-from schema import cities
+from schema import cities, roads
 
 app = FastAPI()
 
@@ -84,6 +85,40 @@ async def update_city(name: str, city: City):
     await database.execute(query=query)
 
     return CityResponse(status='updated')
+
+
+async def get_city_id(name: str):
+    """Get a city id"""
+    query = cities.select().where(cities.c.name == name)
+
+    database = db_manager.get_database()
+    row = await database.fetch_one(query=query)
+
+    if row is None:
+        raise HTTPException(status_code=http.HTTPStatus.NOT_FOUND,
+                            detail="Item not found",
+                            headers={
+                                "X-Error": f"Request asked for city name: [{name}]"})
+    return row.id
+
+
+@app.post("/road")
+async def add_road(road: Road):
+    """Add a road to the Roads table"""
+
+    first_city_id = await get_city_id(name=road.first_city_name)
+    second_city_id = await get_city_id(name=road.second_city_name)
+
+    query = roads.insert(
+        values={"first_city_id": first_city_id,
+                "second_city_id": second_city_id,
+                "distance_km": road.distance_km,
+                "duration_minutes": road.duration_minutes})
+
+    database = db_manager.get_database()
+    await database.execute(query=query)
+
+    return RoadResponse(status='success')
 
 
 @app.post("/route")
