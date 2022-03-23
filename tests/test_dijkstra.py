@@ -1,4 +1,4 @@
-from dijkstra import Graph, dijkstra_algorithm
+from adapter_dijkstra import AdapterDijkstra
 from models import City, CityResponse, Road, RoadResponse
 from db import get_city_id, get_city_name
 from schema import cities, roads
@@ -67,7 +67,7 @@ async def get_init_graph(database):
     rows = await database.fetch_all(query=query)
 
     for row in rows:
-        init_graph[row.first_city_id][row.second_city_id] = row.distance_km
+        init_graph[row.first_city_id][row.second_city_id] = getattr(row, 'distance_km')
 
     return init_graph
 
@@ -78,8 +78,6 @@ async def test_dijkstra_algorithm(client, sqlite_database):
 
     for node in nodes:
         add_city_to_db(client=client, name=node)
-
-    converted_nodes = await convert_nodes(nodes=nodes)
 
     add_road_to_db(client=client,
                    first_city="Reykjavik", second_city="Oslo",
@@ -116,20 +114,11 @@ async def test_dijkstra_algorithm(client, sqlite_database):
     add_road_to_db(client=client,
                    first_city="Rome", second_city="Athens",
                    distance=2)
+    
+    adapter = AdapterDijkstra(start_city='Reykjavik', target_city='Belgrade', strategy='shortest')
+    redable_path, shortest_path = await adapter.get_optimal_path()
 
-    init_graph = await get_init_graph(database=sqlite_database)
-    start_node = await get_city_id(name="Reykjavik")
-    target_node = await get_city_id(name="Belgrade")
+    result = " -> ".join(redable_path)
+    assert result == "Reykjavik -> Oslo -> Berlin -> Rome -> Athens -> Belgrade"
 
-    graph = Graph(converted_nodes, init_graph)
-    previous_nodes, shortest_paths = dijkstra_algorithm(graph=graph,
-                                                        start_node=start_node)
-
-    node_path = get_path(
-        previous_nodes, start_node=start_node, target_node=target_node)
-
-    readable_path = await convert_nodes_to_readable(node_path)
-    result = " -> ".join(readable_path)
-
-    assert get_shortest_path_for_target_node(shortest_paths, target_node) == 11
-    assert "Reykjavik -> Oslo -> Berlin -> Rome -> Athens -> Belgrade" == result
+    assert shortest_path == 11
