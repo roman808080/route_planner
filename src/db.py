@@ -2,7 +2,7 @@ from importlib.metadata import metadata
 import os
 from urllib.parse import quote_plus
 from databases import Database
-from sqlalchemy.sql import or_
+from sqlalchemy.sql import or_, and_
 from sqlalchemy.ext.asyncio import create_async_engine
 from schema import metadata, cities, roads
 
@@ -81,6 +81,26 @@ async def get_city_ids():
         ids.append(row.id)
 
     return ids
+
+
+async def get_sum_of_parameter_for_cities(city_list, parameter):
+    list_of_parameters = []
+
+    for i in range(1, len(city_list)):
+        start_city = city_list[i - 1]
+        destination_city = city_list[i]
+
+        list_of_parameters.append(and_(roads.c.first_city_id == start_city,
+                                       roads.c.second_city_id == destination_city))
+
+    table_attr = getattr(roads.c, parameter)
+    query = roads.select().where(or_(*list_of_parameters))
+
+    database = db_manager.get_database()
+    rows = await database.fetch_all(query=query)
+
+    results = [getattr(row, parameter) for row in rows]
+    return sum(results)
 
 
 async def delete_depended_roads(city_name: str):
