@@ -4,8 +4,9 @@ from fastapi import FastAPI, HTTPException
 from models import (RouteRequest, RouteResponse, City,
                     CityResponse, Road, RoadResponse)
 
-from db import db_manager, is_city_in_table, is_road_in_table
+from db import db_manager, is_city_in_table, is_road_in_table, get_city_id
 from schema import cities, roads
+from utils import raise_http_404_if_cities_were_not_found
 
 app = FastAPI()
 
@@ -76,27 +77,13 @@ async def update_city(name: str, city: City):
     return CityResponse(status='updated')
 
 
-async def get_city_id(name: str):
-    """Get a city id"""
-    query = cities.select().where(cities.c.name == name)
-
-    database = db_manager.get_database()
-    row = await database.fetch_one(query=query)
-
-    if row is None:
-        raise HTTPException(status_code=http.HTTPStatus.NOT_FOUND,
-                            detail="Item not found",
-                            headers={
-                                "X-Error": f"Request asked for city name: [{name}]"})
-    return row.id
-
-
 @app.post("/road")
 async def add_road(road: Road):
     """Add a road to the Roads table"""
 
     first_city_id = await get_city_id(name=road.first_city_name)
     second_city_id = await get_city_id(name=road.second_city_name)
+    raise_http_404_if_cities_were_not_found([first_city_id, second_city_id])
 
     if await is_road_in_table(first_city_id=first_city_id,
                               second_city_id=second_city_id):
@@ -123,6 +110,7 @@ async def update_road(first_city: str, second_city: str, road: Road):
 
     first_city_id = await get_city_id(name=first_city)
     second_city_id = await get_city_id(name=second_city)
+    raise_http_404_if_cities_were_not_found([first_city_id, second_city_id])
 
     query = roads.select().where(roads.c.first_city_id == first_city_id,
                                  roads.c.second_city_id == second_city_id)
@@ -150,6 +138,7 @@ async def delete_city(first_city: str, second_city: str):
     """Delete a city in the table"""
     first_city_id = await get_city_id(name=first_city)
     second_city_id = await get_city_id(name=second_city)
+    raise_http_404_if_cities_were_not_found([first_city_id, second_city_id])
 
     query = roads.delete().where(roads.c.first_city_id == first_city_id,
                                  roads.c.second_city_id == second_city_id)

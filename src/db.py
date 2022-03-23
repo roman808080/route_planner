@@ -44,6 +44,19 @@ async def is_road_in_table(first_city_id, second_city_id):
     return await is_in_table(query=query)
 
 
+async def get_city_id(name: str):
+    """Get a city id"""
+    query = cities.select().where(cities.c.name == name)
+
+    database = db_manager.get_database()
+    row = await database.fetch_one(query=query)
+
+    if row is None:
+        return None
+
+    return row.id
+
+
 class DbManager:
     def __init__(self, db_url=None, db_settings={}, metadata=None):
         self.reset(db_url=db_url, db_settings=db_settings, metadata=metadata)
