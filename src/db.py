@@ -3,7 +3,7 @@ import os
 from urllib.parse import quote_plus
 from databases import Database
 from sqlalchemy.ext.asyncio import create_async_engine
-from schema import metadata
+from schema import metadata, cities, roads
 
 
 def get_db_settings(host='db', name='routes', port=5432,
@@ -22,6 +22,26 @@ def get_db_settings(host='db', name='routes', port=5432,
 def create_db_url(host='db', name='routes', port=5432,
                   user='admin', password='example'):
     return f"postgresql+asyncpg://{user}:{password}@{host}:{str(port)}/{name}"
+
+
+async def is_in_table(query):
+    database = db_manager.get_database()
+    rows = await database.fetch_all(query=query)
+    if len(rows) > 0:
+        return True
+
+    return False
+
+
+async def is_city_in_table(name):
+    query = cities.select().where(cities.c.name == name)
+    return await is_in_table(query=query)
+
+
+async def is_road_in_table(first_city_id, second_city_id):
+    query = roads.select().where(roads.c.first_city_id == first_city_id,
+                                 roads.c.second_city_id == second_city_id)
+    return await is_in_table(query=query)
 
 
 class DbManager:

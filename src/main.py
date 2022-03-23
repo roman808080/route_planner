@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException
 from models import (RouteRequest, RouteResponse, City,
                     CityResponse, Road, RoadResponse)
 
-from db import db_manager
+from db import db_manager, is_city_in_table, is_road_in_table
 from schema import cities, roads
 
 app = FastAPI()
@@ -20,20 +20,6 @@ async def startup():
 async def shutdown():
     """Executed on server's shutdown"""
     await db_manager.down()
-
-
-async def is_in_table(query):
-    database = db_manager.get_database()
-    rows = await database.fetch_all(query=query)
-    if len(rows) > 0:
-        return True
-
-    return False
-
-
-async def is_city_in_table(name):
-    query = cities.select().where(cities.c.name == name)
-    return await is_in_table(query=query)
 
 
 @app.post("/city")
@@ -103,12 +89,6 @@ async def get_city_id(name: str):
                             headers={
                                 "X-Error": f"Request asked for city name: [{name}]"})
     return row.id
-
-
-async def is_road_in_table(first_city_id, second_city_id):
-    query = roads.select().where(roads.c.first_city_id == first_city_id,
-                                 roads.c.second_city_id == second_city_id)
-    return await is_in_table(query=query)
 
 
 @app.post("/road")
