@@ -1,5 +1,6 @@
 import http
 from fastapi import FastAPI, HTTPException
+from sqlalchemy.sql import or_
 
 from models import (RouteRequest, RouteResponse, City,
                     CityResponse, Road, RoadResponse)
@@ -44,11 +45,21 @@ async def add_city(city: City):
     return CityResponse(status='success')
 
 
+async def delete_depended_roads(city_name: str):
+    city_id = await get_city_id(name=city_name)
+    query = roads.delete().where(or_(roads.c.first_city_id == city_id,
+                                     roads.c.second_city_id == city_id))
+
+    database = db_manager.get_database()
+    await database.execute(query=query)
+
+
 @app.delete("/city/{name}")
 async def delete_city(name: str):
     """Delete a city in the table"""
-    query = cities.delete().where(cities.c.name == name)
+    await delete_depended_roads(city_name=name)
 
+    query = cities.delete().where(cities.c.name == name)
     database = db_manager.get_database()
     await database.execute(query=query)
 
@@ -134,7 +145,7 @@ async def update_road(first_city: str, second_city: str, road: Road):
 
 
 @app.delete("/road/{first_city}/{second_city}")
-async def delete_city(first_city: str, second_city: str):
+async def delete_road(first_city: str, second_city: str):
     """Delete a city in the table"""
     first_city_id = await get_city_id(name=first_city)
     second_city_id = await get_city_id(name=second_city)

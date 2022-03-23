@@ -62,6 +62,33 @@ async def test_delete_a_non_existing_city(client, sqlite_database):
     assert len(rows) == 0
 
 
+async def test_delete_a_city_with_depended_roads(client, sqlite_database):
+    await add_london(client=client)
+
+    city = City(name="Birmingham", lattitude=52.489471, longitude=-1.898575)
+    response = client.post("/city", json=city.dict())
+
+    city_response = CityResponse(**response.json())
+    assert city_response.status == 'success'
+
+    road = Road(first_city_name="London", second_city_name=city.name,
+                distance_km=163, duration_minutes=85)
+    response = client.post("/road", json=road.dict())
+
+    road_response = RoadResponse(**response.json())
+    assert road_response.status == 'success'
+
+    response = client.delete("/city/Birmingham")
+
+    city_response = CityResponse(**response.json())
+    assert city_response.status == 'deleted'
+
+    query = roads.select()
+    rows = await sqlite_database.fetch_all(query=query)
+
+    assert len(rows) == 0
+
+
 async def test_update_a_city(client, sqlite_database):
     await add_london(client=client)
     await check_amount_of_recrods_in_cities_is_1(sqlite_database=sqlite_database)
