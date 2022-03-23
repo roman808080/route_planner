@@ -2,6 +2,7 @@ from importlib.metadata import metadata
 import os
 from urllib.parse import quote_plus
 from databases import Database
+from sqlalchemy.sql import or_
 from sqlalchemy.ext.asyncio import create_async_engine
 from schema import metadata, cities, roads
 
@@ -55,6 +56,15 @@ async def get_city_id(name: str):
         return None
 
     return row.id
+
+
+async def delete_depended_roads(city_name: str):
+    city_id = await get_city_id(name=city_name)
+    query = roads.delete().where(or_(roads.c.first_city_id == city_id,
+                                     roads.c.second_city_id == city_id))
+
+    database = db_manager.get_database()
+    await database.execute(query=query)
 
 
 class DbManager:
