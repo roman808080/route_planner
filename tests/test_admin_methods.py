@@ -107,3 +107,14 @@ async def test_add_road(client, sqlite_database):
     rows = await sqlite_database.fetch_all(query=query)
 
     assert len(rows) == 1
+
+
+async def test_add_road_without_an_existing_city(client, sqlite_database):
+    await add_london(client=client)
+
+    road = Road(first_city_name="London", second_city_name="Birmingham",
+                distance_km=163, duration_minutes=85)
+    response = client.post("/road", json=road.dict())
+
+    assert response.status_code == http.HTTPStatus.NOT_FOUND
+    assert response.json()['detail'] == 'Item not found'
