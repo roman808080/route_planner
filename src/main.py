@@ -37,7 +37,10 @@ async def add_city(city: City):
     """Add a city to the table"""
 
     if await is_city_in_table(name=city.name):
-        return CityResponse(status='success')
+        raise HTTPException(status_code=http.HTTPStatus.CONFLICT,
+                            detail=f"The city {city.name} already exists",
+                            headers={
+                                "X-Error": f"Request asked for city name: [{city.name}]"})
 
     query = cities.insert(
         values={"name": city.name,

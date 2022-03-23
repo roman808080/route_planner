@@ -25,7 +25,13 @@ async def test_add_city(client, sqlite_database):
 
 async def test_adding_the_same_city_two_times(client, sqlite_database):
     await add_london(client=client)
-    await add_london(client=client)
+
+    response = client.post("/city", json=City(name="London",
+                           lattitude=51.509865, longitude=-0.118092).dict())
+
+    assert response.status_code == http.HTTPStatus.CONFLICT
+    assert response.json()['detail'] == 'The city London already exists'
+
     await check_amount_of_recrods_in_cities_is_1(sqlite_database=sqlite_database)
 
 
