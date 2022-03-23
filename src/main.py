@@ -22,15 +22,18 @@ async def shutdown():
     await db_manager.down()
 
 
-async def is_city_in_table(name):
-    query = cities.select().where(cities.c.name == name)
-
+async def is_in_table(query):
     database = db_manager.get_database()
     rows = await database.fetch_all(query=query)
     if len(rows) > 0:
         return True
 
     return False
+
+
+async def is_city_in_table(name):
+    query = cities.select().where(cities.c.name == name)
+    return await is_in_table(query=query)
 
 
 @app.post("/city")
@@ -102,12 +105,25 @@ async def get_city_id(name: str):
     return row.id
 
 
+async def is_road_in_table(first_city_id, second_city_id):
+    query = roads.select().where(roads.c.first_city_id == first_city_id,
+                                 roads.c.second_city_id == second_city_id)
+    return await is_in_table(query=query)
+
+
 @app.post("/road")
 async def add_road(road: Road):
     """Add a road to the Roads table"""
 
     first_city_id = await get_city_id(name=road.first_city_name)
     second_city_id = await get_city_id(name=road.second_city_name)
+
+    if await is_road_in_table(first_city_id=first_city_id,
+                              second_city_id=second_city_id):
+        raise HTTPException(status_code=http.HTTPStatus.CONFLICT,
+                            detail=f"The road {road.first_city_name}->{road.second_city_name} already exists",
+                            headers={
+                                "X-Error": f"Request asked for city name: [{road.first_city_name}->{road.second_city_name}]"})
 
     query = roads.insert(
         values={"first_city_id": first_city_id,
