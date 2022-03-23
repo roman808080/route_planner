@@ -4,32 +4,6 @@ from db import get_city_id, get_city_name
 from schema import cities, roads
 
 
-async def convert_nodes_to_readable(nodes):
-    readable_nodes = []
-    for node in nodes:
-        readable_nodes.append(await get_city_name(city_id=node))
-
-    return readable_nodes
-
-
-def get_shortest_path_for_target_node(shortest_paths, target_node):
-    return shortest_paths[target_node]
-
-
-def get_path(previous_nodes, start_node, target_node):
-    path = []
-    node = target_node
-
-    while node != start_node:
-        path.append(node)
-        node = previous_nodes[node]
-
-    # Add the start node manually
-    path.append(start_node)
-
-    return reversed(path)
-
-
 def add_city_to_db(client, name):
     response = client.post("/city", json=City(name=name,
                                               lattitude=0, longitude=0).dict())
@@ -44,32 +18,6 @@ def add_road_to_db(client, first_city, second_city, distance):
 
     road_response = RoadResponse(**response.json())
     assert road_response.status == 'success'
-
-
-async def convert_nodes(nodes):
-    id_nodes = []
-    for node in nodes:
-        id_nodes.append(await get_city_id(name=node))
-
-    return id_nodes
-
-
-async def get_init_graph(database):
-    init_graph = {}
-
-    query = cities.select()
-    rows = await database.fetch_all(query=query)
-
-    for row in rows:
-        init_graph[row.id] = {}
-
-    query = roads.select()
-    rows = await database.fetch_all(query=query)
-
-    for row in rows:
-        init_graph[row.first_city_id][row.second_city_id] = getattr(row, 'distance_km')
-
-    return init_graph
 
 
 async def test_dijkstra_algorithm(client, sqlite_database):
