@@ -141,8 +141,8 @@ async def add_road(road: Road):
 async def update_road(first_city: str, second_city: str, road: Road):
     """Update a road in the roads table"""
 
-    first_city_id = await get_city_id(name=road.first_city_name)
-    second_city_id = await get_city_id(name=road.second_city_name)
+    first_city_id = await get_city_id(name=first_city)
+    second_city_id = await get_city_id(name=second_city)
 
     query = roads.select().where(roads.c.first_city_id == first_city_id,
                                  roads.c.second_city_id == second_city_id)
@@ -156,13 +156,28 @@ async def update_road(first_city: str, second_city: str, road: Road):
                                 "X-Error": f"Request asked for road name: [{road.first_city_name}->{road.second_city_name}]"})
 
     query = roads.update().where(roads.c.first_city_id == first_city_id,
-                                  roads.c.second_city_id == second_city_id).values(first_city_id=first_city_id,
-                                                                                   second_city_id=second_city_id,
-                                                                                   distance_km=road.distance_km,
-                                                                                   duration_minutes=road.duration_minutes)
+                                 roads.c.second_city_id == second_city_id).values(first_city_id=first_city_id,
+                                                                                  second_city_id=second_city_id,
+                                                                                  distance_km=road.distance_km,
+                                                                                  duration_minutes=road.duration_minutes)
     await database.execute(query=query)
 
     return RoadResponse(status='updated')
+
+
+@app.delete("/road/{first_city}/{second_city}")
+async def delete_city(first_city: str, second_city: str):
+    """Delete a city in the table"""
+    first_city_id = await get_city_id(name=first_city)
+    second_city_id = await get_city_id(name=second_city)
+
+    query = roads.delete().where(roads.c.first_city_id == first_city_id,
+                                 roads.c.second_city_id == second_city_id)
+
+    database = db_manager.get_database()
+    await database.execute(query=query)
+
+    return RoadResponse(status='deleted')
 
 
 @app.post("/route")

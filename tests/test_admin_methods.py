@@ -207,3 +207,35 @@ async def test_update_non_existing_road(client, sqlite_database):
     response = client.put("/road/London/Birmingham", json=road.dict())
 
     assert response.status_code == http.HTTPStatus.NOT_FOUND
+
+
+async def test_delete_a_road(client, sqlite_database):
+    await add_london(client=client)
+
+    city = City(name="Birmingham", lattitude=52.489471, longitude=-1.898575)
+    response = client.post("/city", json=city.dict())
+
+    city_response = CityResponse(**response.json())
+    assert city_response.status == 'success'
+
+    road = Road(first_city_name="London", second_city_name=city.name,
+                distance_km=163, duration_minutes=85)
+    response = client.post("/road", json=road.dict())
+
+    road_response = RoadResponse(**response.json())
+    assert road_response.status == 'success'
+
+    query = roads.select()
+    rows = await sqlite_database.fetch_all(query=query)
+
+    assert len(rows) == 1
+
+    response = client.delete("/road/London/Birmingham")
+
+    road_response = RoadResponse(**response.json())
+    assert road_response.status == 'deleted'
+
+    query = roads.select()
+    rows = await sqlite_database.fetch_all(query=query)
+
+    assert len(rows) == 0
