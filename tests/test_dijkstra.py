@@ -1,3 +1,5 @@
+import pytest
+
 from dijkstra_adapter import DijkstraAdapter
 from models import City, CityResponse, Road, RoadResponse
 from db import get_city_id, get_city_name
@@ -19,7 +21,8 @@ def add_road_to_db(client, first_city, second_city, distance):
     assert road_response.status == 'success'
 
 
-async def test_dijkstra_algorithm(client, sqlite_database):
+@pytest.fixture
+async def prepared_database(client, sqlite_database):
     nodes = ["Reykjavik", "Oslo", "Moscow", "London",
              "Rome", "Berlin", "Belgrade", "Athens"]
 
@@ -61,8 +64,13 @@ async def test_dijkstra_algorithm(client, sqlite_database):
     add_road_to_db(client=client,
                    first_city="Rome", second_city="Athens",
                    distance=2)
-    
-    adapter = DijkstraAdapter(start_city='Reykjavik', target_city='Belgrade', strategy='shortest')
+
+    yield sqlite_database
+
+
+async def test_dijkstra_algorithm(prepared_database):
+    adapter = DijkstraAdapter(start_city='Reykjavik',
+                              target_city='Belgrade', strategy='shortest')
     redable_path, shortest_path = await adapter.get_optimal_path()
 
     result = " -> ".join(redable_path)
