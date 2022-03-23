@@ -1,4 +1,4 @@
-import pytest
+import http
 from models import City, CityResponse
 from schema import cities
 
@@ -77,5 +77,5 @@ async def test_update_a_city_which_does_not_exist(client, sqlite_database):
     updated_london = City(name="London", lattitude=0, longitude=0)
     response = client.put("/city/London", json=updated_london.dict())
 
-    assert response.status_code == 404
+    assert response.status_code == http.HTTPStatus.NOT_FOUND
     assert response.json()['detail'] == 'Item not found'

@@ -1,3 +1,4 @@
+import http
 from fastapi import FastAPI, HTTPException
 
 from models import RouteRequest, RouteResponse, City, CityResponse
@@ -69,7 +70,7 @@ async def update_city(name: str, city: City):
 
     row = await database.fetch_one(query=query)
     if row is None:
-        raise HTTPException(status_code=404,
+        raise HTTPException(status_code=http.HTTPStatus.NOT_FOUND,
                             detail="Item not found",
                             headers={
                                 "X-Error": f"Request asked for city name: [{name}]"})
