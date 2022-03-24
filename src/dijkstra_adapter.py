@@ -8,6 +8,10 @@ class NonExistingNode(Exception):
     pass
 
 
+class RouteDoesNotExist(Exception):
+    pass
+
+
 class DijkstraAdapter:
     _strategy_map = {
         PlanningStrategy.shortest: 'distance_km',
@@ -29,14 +33,16 @@ class DijkstraAdapter:
         target_node = await get_city_id(name=self._target_city)
 
         if None in [start_node, target_node]:
-            message = (f'One of the nodes does not exist. '
-                       f'Start city = {self._start_city}, target city = {self._target_city}. '
-                       f'Start node = {start_node}, target node = {target_node}')
-            raise NonExistingNode(message)
+            self._raise_non_existing_node_exception(start_node=start_node,
+                                                    target_node=target_node)
 
         graph = Graph(nodes, init_graph)
         previous_nodes, _ = dijkstra_algorithm(graph=graph,
                                                start_node=start_node)
+
+        if len(previous_nodes) == 0:
+            self._raise_route_does_not_exist(start_node=start_node,
+                                             target_node=target_node)
 
         built_path = list(DijkstraAdapter._build_path(previous_nodes=previous_nodes,
                                                       start_node=start_node, target_node=target_node))
@@ -45,6 +51,18 @@ class DijkstraAdapter:
         readable_path = await DijkstraAdapter._convert_built_path_to_readable(built_path=built_path)
 
         return (readable_path, duration, distance)
+
+    def _raise_non_existing_node_exception(self, start_node, target_node):
+        message = (f'One of the nodes does not exist. '
+                   f'Start city = {self._start_city}, target city = {self._target_city}. '
+                   f'Start node = {start_node}, target node = {target_node}')
+        raise NonExistingNode(message)
+
+    def _raise_route_does_not_exist(self, start_node, target_node):
+        message = (f'The route does not exist. '
+                   f'Start city = {self._start_city}, target city = {self._target_city}. '
+                   f'Start node = {start_node}, target node = {target_node}')
+        raise RouteDoesNotExist(message)
 
     @staticmethod
     def _build_path(previous_nodes, start_node, target_node):

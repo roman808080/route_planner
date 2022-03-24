@@ -1,6 +1,7 @@
 import pytest
 
-from dijkstra_adapter import DijkstraAdapter, NonExistingNode
+from test_utils import add_city_to_db
+from dijkstra_adapter import DijkstraAdapter, NonExistingNode, RouteDoesNotExist
 from models import PlanningStrategy
 
 
@@ -47,3 +48,16 @@ async def test_non_existing_start(prepared_database):
     expected_message = ("One of the nodes does not exist. "
                         "Start city = Dnipro, target city = Oslo. Start node = None, target node = 2")
     assert expected_message == str(exc.value)
+
+
+async def test_non_existing_road(client, prepared_database):
+    add_city_to_db(client=client, name='Druzhkivka')
+
+    with pytest.raises(RouteDoesNotExist) as exc:
+        adapter = DijkstraAdapter(start_city='Druzhkivka',
+                                    target_city='Oslo', strategy=PlanningStrategy.fastest)
+        _, _, _= await adapter.get_optimal_path()
+
+    expected_message = ("The route does not exist. "
+                        "Start city = Druzhkivka, target city = Oslo.")
+    assert expected_message in str(exc.value)
