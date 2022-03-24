@@ -43,3 +43,23 @@ The example of response might be:
 ## How to run the code
 
 In order to run the code, you have to setup docker and docker-compose on your environment (https://docs.docker.com/get-docker/, https://docs.docker.com/compose/). Once you have this, use Make to run (`make up`) and test  (`make test`) the code.
+
+## Answers on questions above
+1. I was trying to find something which can be easily dockerized and what can be used in production. For instance, it is relatively hard to dockerize Oracle Database. I can find only old versions of the database on dockerhub, and eventually I would need to build an Oracle linux container in which I would install the database (and it is not an open source project). I did not use SQLite because it cannot be used in production without troubles.
+
+2. Time Complexity is O(E Log V) where, E is the number of cities and V is the number of roads.
+   Space Complexity: O(V).
+   It would perform poorly because I load all nodes to RAM, and it will eventually crash the process. I would need to optimize the algorithm to keep in memory only nodes which I really need. Also, the speed can be improved by using aioprocessing or a similar library which would allow to work on requests in background.
+
+## Additional tasks
+I have not done any of them, but I think I will touch them eventually.
+
+
+## Additional notes (or minuses and disadvantages)
+
+1. I have written tests with sqlite. The tests already pretty slow and will require optimization (~7 seconds on my machine). I think, at least fixtures should be optimized.
+2. I commited .vscode files to the project to use it as an example in future.
+3. I created 3 docker-compose files which should not be a case in the best of the worlds:
+  - one I created to simplify debugging
+  - another one for load tests
+4. The load test can be further automated by using "-headless --reset-stats -t 30s --only-summary |& tee summary.txt" inside the load-test docker compose
