@@ -1,5 +1,5 @@
 FROM locustio/locust:2.8.3
 USER locust
-# WORKDIR /locust
 COPY locust/requirements.txt requirements.txt
 RUN pip install -r requirements.txt
+ENTRYPOINT locust -f /locust/locustfile.py -H http://api:8000 -u 10 -r 1

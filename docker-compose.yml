@@ -15,7 +15,6 @@ services:
   perf-test:
     build:
       dockerfile: Dockerfile.Locust
-    command: -f /locust/locustfile.py -H http://api:8000 -u 10 -r 1
     ports:
       - 8089:8089
     volumes:
