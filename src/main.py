@@ -7,7 +7,8 @@ from models import (RouteRequest, RouteResponse, City,
 from db import (db_manager, is_city_in_table, is_road_in_table,
                 get_city_id, delete_depended_roads)
 from schema import cities, roads
-from utils import (raise_http_404_if_cities_were_not_found, raise_http_404_non_existing_node, raise_http_404_non_existing_road)
+from utils import (raise_http_404_if_cities_were_not_found,
+                   raise_http_404_non_existing_node, raise_http_404_non_existing_road)
 from dijkstra_adapter import DijkstraAdapter, NonExistingNode, RouteDoesNotExist
 
 app = FastAPI()
@@ -93,7 +94,7 @@ async def add_road(road: Road):
         raise HTTPException(status_code=http.HTTPStatus.CONFLICT,
                             detail=f"The road {road.first_city_name}->{road.second_city_name} already exists",
                             headers={
-                                "X-Error": f"Request asked for road name: [{road.first_city_name}->{road.second_city_name}]"})
+                                "Error": f"Request asked for road name: [{road.first_city_name}->{road.second_city_name}]"})
 
     query = roads.insert(
         values={"first_city_id": first_city_id,
@@ -124,7 +125,7 @@ async def update_road(first_city: str, second_city: str, road: Road):
         raise HTTPException(status_code=http.HTTPStatus.NOT_FOUND,
                             detail="Item not found",
                             headers={
-                                "X-Error": f"Request asked for road name: [{road.first_city_name}->{road.second_city_name}]"})
+                                "Error": f"Request asked for road name: [{road.first_city_name}->{road.second_city_name}]"})
 
     query = roads.update().where(roads.c.first_city_id == first_city_id,
                                  roads.c.second_city_id == second_city_id).values(first_city_id=first_city_id,
@@ -162,7 +163,7 @@ async def plan_route(params: RouteRequest):
         route, distance, duration = await route_planner.get_optimal_path()
 
         return RouteResponse(distance_km=distance, duration_minutes=duration,
-                            route=route)
+                             route=route)
 
     except NonExistingNode as exc:
         raise_http_404_non_existing_node(message=repr(exc))
