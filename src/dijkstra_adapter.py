@@ -32,9 +32,9 @@ class DijkstraAdapter:
                                                       start_node=start_node, target_node=target_node))
 
         duration, distance = await get_sum_of_parameters_for_path(built_path)
-        redable_path = await DijkstraAdapter._convert_built_path_to_readable(built_path=built_path)
+        readable_path = await DijkstraAdapter._convert_built_path_to_readable(built_path=built_path)
 
-        return (redable_path, duration, distance)
+        return (readable_path, duration, distance)
 
     @staticmethod
     def _build_path(previous_nodes, start_node, target_node):
