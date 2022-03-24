@@ -83,24 +83,28 @@ async def get_city_ids():
     return ids
 
 
-async def get_sum_of_parameter_for_cities(city_list, parameter):
+async def get_sum_of_parameters_for_path(cities_ids):
     list_of_parameters = []
 
-    for i in range(1, len(city_list)):
-        start_city = city_list[i - 1]
-        destination_city = city_list[i]
+    for i in range(1, len(cities_ids)):
+        start_city = cities_ids[i - 1]
+        destination_city = cities_ids[i]
 
         list_of_parameters.append(and_(roads.c.first_city_id == start_city,
                                        roads.c.second_city_id == destination_city))
 
-    table_attr = getattr(roads.c, parameter)
+        list_of_parameters.append(and_(roads.c.first_city_id == destination_city,
+                                       roads.c.second_city_id == start_city))
+
     query = roads.select().where(or_(*list_of_parameters))
 
     database = db_manager.get_database()
     rows = await database.fetch_all(query=query)
 
-    results = [getattr(row, parameter) for row in rows]
-    return sum(results)
+    distances = [row.distance_km for row in rows]
+    durations = [row.duration_minutes for row in rows]
+
+    return (sum(distances), sum(durations))
 
 
 async def delete_depended_roads(city_name: str):

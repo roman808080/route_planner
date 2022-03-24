@@ -1,13 +1,13 @@
 from dijkstra import Graph, dijkstra_algorithm
-from db import get_city_id, get_city_ids, db_manager, get_city_name
+from db import get_city_id, get_city_ids, db_manager, get_city_name, get_sum_of_parameters_for_path
 from schema import cities, roads
 from models import PlanningStrategy
 
 
 class DijkstraAdapter:
     _strategy_map = {
+        PlanningStrategy.shortest: 'distance_km',
         PlanningStrategy.fastest: 'duration_minutes',
-        PlanningStrategy.shortest: 'distance_km'
     }
 
     def __init__(self, start_city, target_city, strategy):
@@ -25,14 +25,16 @@ class DijkstraAdapter:
         target_node = await get_city_id(name=self._target_city)
 
         graph = Graph(nodes, init_graph)
-        previous_nodes, shortest_paths = dijkstra_algorithm(graph=graph,
-                                                            start_node=start_node)
+        previous_nodes, _ = dijkstra_algorithm(graph=graph,
+                                               start_node=start_node)
 
-        built_path = DijkstraAdapter._build_path(previous_nodes=previous_nodes,
-                                                 start_node=start_node, target_node=target_node)
+        built_path = list(DijkstraAdapter._build_path(previous_nodes=previous_nodes,
+                                                      start_node=start_node, target_node=target_node))
+
+        duration, distance = await get_sum_of_parameters_for_path(built_path)
         redable_path = await DijkstraAdapter._convert_built_path_to_readable(built_path=built_path)
 
-        return (redable_path, shortest_paths[target_node])
+        return (redable_path, duration, distance)
 
     @staticmethod
     def _build_path(previous_nodes, start_node, target_node):
