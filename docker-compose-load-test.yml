@@ -2,11 +2,9 @@ version: "3.9"
 services:
 
   api:
-    build:
-      dockerfile: Dockerfile.Dev
+    build: .
     ports:
       - "8000:8000"
-      - "5678:5678"
     volumes:
       - ./src/:/app
       - ./tests:/tests
@@ -32,6 +30,8 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: example
       POSTGRES_DB: routes
+    volumes:
+      - ./data/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   adminer:
     image: adminer
