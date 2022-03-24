@@ -8,6 +8,7 @@ from db import (db_manager, is_city_in_table, is_road_in_table,
                 get_city_id, delete_depended_roads)
 from schema import cities, roads
 from utils import raise_http_404_if_cities_were_not_found
+from dijkstra_adapter import DijkstraAdapter
 
 app = FastAPI()
 
@@ -154,13 +155,13 @@ async def delete_road(first_city: str, second_city: str):
 @app.post("/route")
 async def plan_route(params: RouteRequest):
     """Plan a route between cities"""
-    raise NotImplementedError()
-    return RouteResponse(
-        distance_km=168.43,
-        duration_minutes=95,
-        route=["Ostrava", "Bilovec", "Hranice",
-               "Olomouc", "Prostejov", "Vyskov", "Brno"],
-    )
+    route_planner = DijkstraAdapter(start_city=params.start,
+                                    target_city=params.destination,
+                                    strategy=params.strategy)
+    route, distance, duration = await route_planner.get_optimal_path()
+
+    return RouteResponse(distance_km=distance, duration_minutes=duration,
+                         route=route)
 
 
 if __name__ == "__main__":
