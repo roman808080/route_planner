@@ -44,6 +44,10 @@ The example of response might be:
 
 In order to run the code, you have to setup docker and docker-compose on your environment (https://docs.docker.com/get-docker/, https://docs.docker.com/compose/). Once you have this, use Make to run (`make up`) and test  (`make test`) the code.
 
+
+## Locust report
+The report is here -> https://github.com/roman808080/route_planner/blob/master/doc/test_report_for_locustfile.pdf
+
 ## Answers on questions above
 1. I was trying to find something which can be easily dockerized and what can be used in production. For instance, it is relatively hard to dockerize Oracle Database. I can find only old versions of the database on dockerhub, and eventually I would need to build an Oracle linux container in which I would install the database (and it is not an open source project). I did not use SQLite because it cannot be used in production without troubles.
 
