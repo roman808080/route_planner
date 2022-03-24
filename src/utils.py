@@ -16,3 +16,10 @@ def raise_http_404_non_existing_node(message):
                         detail=message,
                         headers={
                             "Error": message})
+
+
+def raise_http_404_non_existing_road(message):
+    raise HTTPException(status_code=http.HTTPStatus.NOT_FOUND,
+                        detail=message,
+                        headers={
+                            "Error": message})

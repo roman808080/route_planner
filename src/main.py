@@ -7,7 +7,7 @@ from models import (RouteRequest, RouteResponse, City,
 from db import (db_manager, is_city_in_table, is_road_in_table,
                 get_city_id, delete_depended_roads)
 from schema import cities, roads
-from utils import raise_http_404_if_cities_were_not_found, raise_http_404_non_existing_node
+from utils import (raise_http_404_if_cities_were_not_found, raise_http_404_non_existing_node, raise_http_404_non_existing_road)
 from dijkstra_adapter import DijkstraAdapter, NonExistingNode, RouteDoesNotExist
 
 app = FastAPI()
@@ -166,6 +166,8 @@ async def plan_route(params: RouteRequest):
 
     except NonExistingNode as exc:
         raise_http_404_non_existing_node(message=repr(exc))
+    except RouteDoesNotExist as exc:
+        raise_http_404_non_existing_road(message=repr(exc))
 
 
 if __name__ == "__main__":
