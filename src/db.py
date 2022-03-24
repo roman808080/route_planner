@@ -2,7 +2,7 @@ from importlib.metadata import metadata
 import os
 from urllib.parse import quote_plus
 from databases import Database
-from sqlalchemy.sql import or_
+from sqlalchemy.sql import or_, and_
 from sqlalchemy.ext.asyncio import create_async_engine
 from schema import metadata, cities, roads
 
@@ -56,6 +56,55 @@ async def get_city_id(name: str):
         return None
 
     return row.id
+
+
+async def get_city_name(city_id: int):
+    """Get a city name"""
+    query = cities.select().where(cities.c.id == city_id)
+
+    database = db_manager.get_database()
+    row = await database.fetch_one(query=query)
+
+    if row is None:
+        return None
+
+    return row.name
+
+
+async def get_city_ids():
+    query = cities.select()
+    ids = []
+
+    database = db_manager.get_database()
+    rows = await database.fetch_all(query=query)
+    for row in rows:
+        ids.append(row.id)
+
+    return ids
+
+
+async def get_sum_of_parameters_for_path(cities_ids):
+    list_of_parameters = []
+
+    for i in range(1, len(cities_ids)):
+        start_city = cities_ids[i - 1]
+        destination_city = cities_ids[i]
+
+        list_of_parameters.append(and_(roads.c.first_city_id == start_city,
+                                       roads.c.second_city_id == destination_city))
+
+        list_of_parameters.append(and_(roads.c.first_city_id == destination_city,
+                                       roads.c.second_city_id == start_city))
+
+    query = roads.select().where(or_(*list_of_parameters))
+
+    database = db_manager.get_database()
+    rows = await database.fetch_all(query=query)
+
+    distances = [row.distance_km for row in rows]
+    durations = [row.duration_minutes for row in rows]
+
+    return (sum(distances), sum(durations))
 
 
 async def delete_depended_roads(city_name: str):
