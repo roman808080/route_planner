@@ -112,12 +112,43 @@
                 "/tests",
             ]
         },
-                {
+        {
             "label": "Run Tests For Debug",
             "type": "shell",
             "dependsOrder": "sequence",
             "dependsOn": [
                 "Prepare Tests For Debug",
+                "Sleep For Synchronization",
+            ],
+        },
+        {
+            "label": "Prepare Data Generator for Debug",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "compose",
+                "run",
+                "-w",
+                "/scripts",
+                "-d",
+                "--publish",
+                "5680:5680",
+                "--rm",
+                "api",
+                "python",
+                "/tmp/debugpy",
+                "--wait-for-client",
+                "--listen",
+                "0.0.0.0:5680",
+                "/scripts/generate_test_data.py",
+            ]
+        },
+        {
+            "label": "Run Data Generator For Debug",
+            "type": "shell",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Prepare Data Generator for Debug",
                 "Sleep For Synchronization",
             ],
         },

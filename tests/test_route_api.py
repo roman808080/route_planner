@@ -1,6 +1,3 @@
-import pytest
-from fastapi import HTTPException
-
 from models import PlanningStrategy, RouteRequest, RouteResponse
 from test_utils import add_city_to_db
 

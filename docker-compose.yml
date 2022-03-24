@@ -8,6 +8,7 @@ services:
     volumes:
       - ./src/:/app
       - ./tests:/tests
+      - ./scripts:/scripts
     depends_on:
       - db
 
