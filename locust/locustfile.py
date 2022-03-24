@@ -1,4 +1,5 @@
 from locust import HttpUser, task, constant
+import random
 
 
 class Traveler(HttpUser):
@@ -6,4 +7,8 @@ class Traveler(HttpUser):
 
     @task
     def plan_route(self):
-        self.client.post("/route", json={"start": "TestCity1", "destination": "TestCity2", "strategy": "fastest"})
+        start_city_number = random.randrange(500)
+        end_city_number = random.randrange(500)
+
+        self.client.post(
+            "/route", json={"start": f"TestCity{start_city_number}", "destination": f"TestCity{end_city_number}", "strategy": "fastest"})
