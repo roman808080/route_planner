@@ -26,6 +26,9 @@ class DijkstraAdapter:
         self._strategy_attr = DijkstraAdapter._strategy_map[strategy]
 
     async def get_optimal_path(self):
+        if self._start_city == self._target_city:
+            return ([], 0, 0)
+
         nodes = await get_city_ids()
         init_graph = await self._get_init_graph()
 

@@ -55,9 +55,19 @@ async def test_non_existing_road(client, prepared_database):
 
     with pytest.raises(RouteDoesNotExist) as exc:
         adapter = DijkstraAdapter(start_city='Druzhkivka',
-                                    target_city='Oslo', strategy=PlanningStrategy.fastest)
-        _, _, _= await adapter.get_optimal_path()
+                                  target_city='Oslo', strategy=PlanningStrategy.fastest)
+        _, _, _ = await adapter.get_optimal_path()
 
     expected_message = ("The route does not exist. "
                         "Start city = Druzhkivka, target city = Oslo.")
     assert expected_message in str(exc.value)
+
+
+async def test_road_to_the_same_city(prepared_database):
+    adapter = DijkstraAdapter(start_city='Reykjavik',
+                              target_city='Reykjavik', strategy=PlanningStrategy.fastest)
+    readable_path, distance, duration = await adapter.get_optimal_path()
+
+    assert readable_path == []
+    assert distance == 0
+    assert duration == 0
