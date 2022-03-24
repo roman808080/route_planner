@@ -4,6 +4,10 @@ from schema import cities, roads
 from models import PlanningStrategy
 
 
+class NonExistingNode(Exception):
+    pass
+
+
 class DijkstraAdapter:
     _strategy_map = {
         PlanningStrategy.shortest: 'distance_km',
@@ -23,6 +27,12 @@ class DijkstraAdapter:
 
         start_node = await get_city_id(name=self._start_city)
         target_node = await get_city_id(name=self._target_city)
+
+        if None in [start_node, target_node]:
+            message = (f'One of the nodes does not exist. '
+                       f'Start city = {self._start_city}, target city = {self._target_city}. '
+                       f'Start node = {start_node}, target node = {target_node}')
+            raise NonExistingNode(message)
 
         graph = Graph(nodes, init_graph)
         previous_nodes, _ = dijkstra_algorithm(graph=graph,
