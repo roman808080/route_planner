@@ -6,4 +6,4 @@ class Traveler(HttpUser):
 
     @task
     def plan_route(self):
-        self.client.post("/route", json={"start": "a", "destination": "b", "strategy": "fastest"})
+        self.client.post("/route", json={"start": "TestCity1", "destination": "TestCity2", "strategy": "fastest"})
