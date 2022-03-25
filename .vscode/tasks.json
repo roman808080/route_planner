@@ -151,6 +151,18 @@
                 "Prepare Data Generator for Debug",
                 "Sleep For Synchronization",
             ],
+            "detail": "This task does not work."
         },
+        {
+            "label": "Restart Prometheus server",
+            "type": "shell",
+            "command": "curl",
+            "args": [
+                "-X",
+                "POST",
+                "http://localhost:9090/-/reload",
+            ],
+            "problemMatcher": [],
+        }
     ]
 }

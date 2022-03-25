@@ -1,5 +1,6 @@
 import http
 from fastapi import FastAPI, HTTPException
+from prometheus_client import start_http_server
 
 from models import (RouteRequest, RouteResponse, City,
                     CityResponse, Road, RoadResponse)
@@ -13,11 +14,15 @@ from dijkstra_adapter import DijkstraAdapter, NonExistingNode, RouteDoesNotExist
 
 app = FastAPI()
 
+APPLICATION_DEFAULT_PORT = 8000
+PROMETHEUS_DEFAULT_PORT = 8001
+
 
 @app.on_event("startup")
 async def startup():
     """Executed on server's startup"""
     await db_manager.up()
+    start_http_server(PROMETHEUS_DEFAULT_PORT)
 
 
 @app.on_event("shutdown")
@@ -173,4 +178,4 @@ async def plan_route(params: RouteRequest):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=APPLICATION_DEFAULT_PORT)
