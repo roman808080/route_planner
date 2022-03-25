@@ -9,3 +9,4 @@ databases
 databases[sqlite]
 asyncpg
 psycopg2-binary
+prometheus-client
