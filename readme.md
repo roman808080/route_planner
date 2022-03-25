@@ -57,6 +57,7 @@ The report is here -> https://github.com/roman808080/route_planner/blob/master/d
 
 ## Additional tasks
 I have not done any of them, but I think I will touch them eventually.
+UPDATE: I added prometheus without graphana. I have not added any mesurements yet.
 
 
 ## Additional notes (or minuses and disadvantages)
