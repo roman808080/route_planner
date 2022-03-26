@@ -1,10 +1,9 @@
-from logging import exception
 from prometheus_client import Counter
 from fastapi import Request
 
 prometheus_exceptions = Counter('server_exceptions_total',
                                 'Total number of exception raised by this webserver',
-                                ['method', 'endpoint', 'exception'])
+                                ['method', 'endpoint', 'exception_class'])
 
 prometheus_requirements = Counter('server_requests_total',
                                   'Total number of requests to this webserver',
@@ -25,5 +24,5 @@ async def middleware_calculate_unhandled_exceptions(request: Request, call_next)
 
     except Exception as exc:
         prometheus_exceptions.labels(method=request.method, endpoint=request.url.path,
-                                     exception=repr(exc)).inc()
+                                     exception_class=type(exc)).inc()
         raise exc
