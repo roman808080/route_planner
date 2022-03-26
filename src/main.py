@@ -11,8 +11,12 @@ from schema import cities, roads
 from utils import (raise_http_404_if_cities_were_not_found,
                    raise_http_404_non_existing_node, raise_http_404_non_existing_road)
 from dijkstra_adapter import DijkstraAdapter, NonExistingNode, RouteDoesNotExist
+from prometheus_measurements import middleware_calculate_requests, middleware_calculate_unhandled_exceptions
 
 app = FastAPI()
+
+app.middleware("http")(middleware_calculate_requests)
+app.middleware("http")(middleware_calculate_unhandled_exceptions)
 
 APPLICATION_DEFAULT_PORT = 8000
 PROMETHEUS_DEFAULT_PORT = 8001
