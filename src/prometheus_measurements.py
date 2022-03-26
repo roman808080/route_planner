@@ -23,5 +23,5 @@ async def middleware_calculate_unhandled_exceptions(request: Request, call_next)
         return response
 
     except Exception as exc:
-        prometheus_requirements.labels(method=request.method, endpoint=request.url.path).inc()
+        prometheus_exceptions.labels(method=request.method, endpoint=request.url.path).inc()
         raise exc
