@@ -48,9 +48,9 @@ async def plan_route(params: RouteRequest):
                              route=route)
 
     except NonExistingNode as exc:
-        raise_http_404_non_existing_node(message=repr(exc))
+        raise_http_404_non_existing_node(detail=repr(exc))
     except RouteDoesNotExist as exc:
-        raise_http_404_non_existing_road(message=repr(exc))
+        raise_http_404_non_existing_road(detail=repr(exc))
 
 
 if __name__ == "__main__":
