@@ -4,7 +4,7 @@ from schema import cities, roads
 
 
 async def add_london(client):
-    response = client.post("/city", json=City(name="London",
+    response = client.post("/admin/city", json=City(name="London",
                            lattitude=51.509865, longitude=-0.118092).dict())
 
     city_response = CityResponse(**response.json())
@@ -26,7 +26,7 @@ async def test_add_city(client, sqlite_database):
 async def test_adding_the_same_city_two_times(client, sqlite_database):
     await add_london(client=client)
 
-    response = client.post("/city", json=City(name="London",
+    response = client.post("/admin/city", json=City(name="London",
                            lattitude=51.509865, longitude=-0.118092).dict())
 
     assert response.status_code == http.HTTPStatus.CONFLICT
@@ -39,7 +39,7 @@ async def test_delete_a_city(client, sqlite_database):
     await add_london(client=client)
     await check_amount_of_recrods_in_cities_is_1(sqlite_database=sqlite_database)
 
-    response = client.delete("/city/London")
+    response = client.delete("/admin/city/London")
 
     city_response = CityResponse(**response.json())
     assert city_response.status == 'deleted'
@@ -51,7 +51,7 @@ async def test_delete_a_city(client, sqlite_database):
 
 
 async def test_delete_a_non_existing_city(client, sqlite_database):
-    response = client.delete("/city/London")
+    response = client.delete("/admin/city/London")
 
     city_response = CityResponse(**response.json())
     assert city_response.status == 'deleted'
@@ -66,19 +66,19 @@ async def test_delete_a_city_with_depended_roads(client, sqlite_database):
     await add_london(client=client)
 
     city = City(name="Birmingham", lattitude=52.489471, longitude=-1.898575)
-    response = client.post("/city", json=city.dict())
+    response = client.post("/admin/city", json=city.dict())
 
     city_response = CityResponse(**response.json())
     assert city_response.status == 'success'
 
     road = Road(first_city_name="London", second_city_name=city.name,
                 distance_km=163, duration_minutes=85)
-    response = client.post("/road", json=road.dict())
+    response = client.post("/admin/road", json=road.dict())
 
     road_response = RoadResponse(**response.json())
     assert road_response.status == 'success'
 
-    response = client.delete("/city/Birmingham")
+    response = client.delete("/admin/city/Birmingham")
 
     city_response = CityResponse(**response.json())
     assert city_response.status == 'deleted'
@@ -94,7 +94,7 @@ async def test_update_a_city(client, sqlite_database):
     await check_amount_of_recrods_in_cities_is_1(sqlite_database=sqlite_database)
 
     updated_london = City(name="London", lattitude=0, longitude=0)
-    response = client.put("/city/London", json=updated_london.dict())
+    response = client.put("/admin/city/London", json=updated_london.dict())
 
     city_response = CityResponse(**response.json())
     assert city_response.status == 'updated'
@@ -108,7 +108,7 @@ async def test_update_a_city(client, sqlite_database):
 
 async def test_update_a_city_which_does_not_exist(client, sqlite_database):
     updated_london = City(name="London", lattitude=0, longitude=0)
-    response = client.put("/city/London", json=updated_london.dict())
+    response = client.put("/admin/city/London", json=updated_london.dict())
 
     assert response.status_code == http.HTTPStatus.NOT_FOUND
     assert response.json()['detail'] == 'Item not found'
@@ -118,14 +118,14 @@ async def test_add_road(client, sqlite_database):
     await add_london(client=client)
 
     city = City(name="Birmingham", lattitude=52.489471, longitude=-1.898575)
-    response = client.post("/city", json=city.dict())
+    response = client.post("/admin/city", json=city.dict())
 
     city_response = CityResponse(**response.json())
     assert city_response.status == 'success'
 
     road = Road(first_city_name="London", second_city_name=city.name,
                 distance_km=163, duration_minutes=85)
-    response = client.post("/road", json=road.dict())
+    response = client.post("/admin/road", json=road.dict())
 
     road_response = RoadResponse(**response.json())
     assert road_response.status == 'success'
@@ -141,7 +141,7 @@ async def test_add_road_without_an_existing_city(client, sqlite_database):
 
     road = Road(first_city_name="London", second_city_name="Birmingham",
                 distance_km=163, duration_minutes=85)
-    response = client.post("/road", json=road.dict())
+    response = client.post("/admin/road", json=road.dict())
 
     assert response.status_code == http.HTTPStatus.NOT_FOUND
     assert response.json()['detail'] == 'Item not found'
@@ -151,14 +151,14 @@ async def test_add_duplication_road(client, sqlite_database):
     await add_london(client=client)
 
     city = City(name="Birmingham", lattitude=52.489471, longitude=-1.898575)
-    response = client.post("/city", json=city.dict())
+    response = client.post("/admin/city", json=city.dict())
 
     city_response = CityResponse(**response.json())
     assert city_response.status == 'success'
 
     road = Road(first_city_name="London", second_city_name=city.name,
                 distance_km=163, duration_minutes=85)
-    response = client.post("/road", json=road.dict())
+    response = client.post("/admin/road", json=road.dict())
 
     road_response = RoadResponse(**response.json())
     assert road_response.status == 'success'
@@ -170,7 +170,7 @@ async def test_add_duplication_road(client, sqlite_database):
 
     road = Road(first_city_name="London", second_city_name=city.name,
                 distance_km=163, duration_minutes=85)
-    response = client.post("/road", json=road.dict())
+    response = client.post("/admin/road", json=road.dict())
 
     assert response.status_code == http.HTTPStatus.CONFLICT
 
@@ -182,14 +182,14 @@ async def test_update_road(client, sqlite_database):
     await add_london(client=client)
 
     city = City(name="Birmingham", lattitude=52.489471, longitude=-1.898575)
-    response = client.post("/city", json=city.dict())
+    response = client.post("/admin/city", json=city.dict())
 
     city_response = CityResponse(**response.json())
     assert city_response.status == 'success'
 
     road = Road(first_city_name="London", second_city_name=city.name,
                 distance_km=163, duration_minutes=85)
-    response = client.post("/road", json=road.dict())
+    response = client.post("/admin/road", json=road.dict())
 
     road_response = RoadResponse(**response.json())
     assert road_response.status == 'success'
@@ -200,7 +200,7 @@ async def test_update_road(client, sqlite_database):
     assert len(rows) == 1
 
     road.duration_minutes = 60
-    response = client.put("/road/London/Birmingham", json=road.dict())
+    response = client.put("/admin/road/London/Birmingham", json=road.dict())
 
     road_response = RoadResponse(**response.json())
     assert road_response.status == 'updated'
@@ -214,7 +214,7 @@ async def test_update_road(client, sqlite_database):
 async def test_update_non_existing_road_without_cities(client, sqlite_database):
     road = Road(first_city_name="London", second_city_name="Birmingham",
                 distance_km=163, duration_minutes=85)
-    response = client.put("/road/London/Birmingham", json=road.dict())
+    response = client.put("/admin/road/London/Birmingham", json=road.dict())
 
     assert response.status_code == http.HTTPStatus.NOT_FOUND
     assert response.json()['detail'] == 'Item not found'
@@ -224,14 +224,14 @@ async def test_update_non_existing_road(client, sqlite_database):
     await add_london(client=client)
 
     city = City(name="Birmingham", lattitude=52.489471, longitude=-1.898575)
-    response = client.post("/city", json=city.dict())
+    response = client.post("/admin/city", json=city.dict())
 
     city_response = CityResponse(**response.json())
     assert city_response.status == 'success'
 
     road = Road(first_city_name="London", second_city_name="Birmingham",
                 distance_km=163, duration_minutes=85)
-    response = client.put("/road/London/Birmingham", json=road.dict())
+    response = client.put("/admin/road/London/Birmingham", json=road.dict())
 
     assert response.status_code == http.HTTPStatus.NOT_FOUND
 
@@ -240,14 +240,14 @@ async def test_delete_a_road(client, sqlite_database):
     await add_london(client=client)
 
     city = City(name="Birmingham", lattitude=52.489471, longitude=-1.898575)
-    response = client.post("/city", json=city.dict())
+    response = client.post("/admin/city", json=city.dict())
 
     city_response = CityResponse(**response.json())
     assert city_response.status == 'success'
 
     road = Road(first_city_name="London", second_city_name=city.name,
                 distance_km=163, duration_minutes=85)
-    response = client.post("/road", json=road.dict())
+    response = client.post("/admin/road", json=road.dict())
 
     road_response = RoadResponse(**response.json())
     assert road_response.status == 'success'
@@ -257,7 +257,7 @@ async def test_delete_a_road(client, sqlite_database):
 
     assert len(rows) == 1
 
-    response = client.delete("/road/London/Birmingham")
+    response = client.delete("/admin/road/London/Birmingham")
 
     road_response = RoadResponse(**response.json())
     assert road_response.status == 'deleted'

@@ -21,7 +21,7 @@ def generate_cities():
         json_data = {'name': city_name,
                      'lattitude': 0, 'longitude': 0}
         response = requests.post(
-            'http://localhost:8000/city', json=json_data).json()
+            'http://localhost:8000/admin/city', json=json_data).json()
         print(response)
 
     return cities
@@ -39,7 +39,7 @@ def generate_roads_for_shuffled_cities(cities):
                      "distance_km": distance,
                      "duration_minutes": duration}
 
-        response = requests.post('http://localhost:8000/road', json=json_data)
+        response = requests.post('http://localhost:8000/admin/road', json=json_data)
         print(response.json())
 
 

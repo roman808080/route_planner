@@ -10,5 +10,5 @@ class Traveler(HttpUser):
         start_city_number = random.randrange(500)
         end_city_number = random.randrange(500)
 
-        self.client.post(
-            "/route", json={"start": f"TestCity{start_city_number}", "destination": f"TestCity{end_city_number}", "strategy": "fastest"})
+        self.client.post("/route", json={"start": f"TestCity{start_city_number}",
+                                         "destination": f"TestCity{end_city_number}", "strategy": "fastest"})
