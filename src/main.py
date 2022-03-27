@@ -4,7 +4,6 @@ from prometheus_client import start_http_server
 from models import RouteRequest, RouteResponse
 
 from db import db_manager
-from schema import cities, roads
 from utils import raise_http_404_non_existing_node, raise_http_404_non_existing_road
 from dijkstra_adapter import DijkstraAdapter, NonExistingNode, RouteDoesNotExist
 from prometheus_measurements import middleware_calculate_requests, middleware_calculate_unhandled_exceptions
