@@ -49,7 +49,7 @@ In order to run the code, you have to setup docker and docker-compose on your en
 The report is here -> https://github.com/roman808080/route_planner/blob/master/doc/test_report_for_locustfile.pdf
 
 ## Answers on questions above
-1. I was trying to find something which can be easily dockerized and what can be used in production. For instance, it is relatively hard to dockerize Oracle Database. I can find only old versions of the database on dockerhub, and eventually I would need to build an Oracle linux container in which I would install the database (and it is not an open source project). I did not use SQLite because it cannot be used in production without troubles.
+1. I was trying to find something which can be easily dockerized and what can be used in production. For instance, it is relatively hard to dockerize Oracle Database. I can find only old versions of the database on dockerhub, and eventually I would need to build an Oracle linux container in which I would install the database (and it is not an open source project). I did not use SQLite because it cannot be used in production without troubles. I have not thought about using non-sql databases because I do not have much experince with them.
 
 2. Time Complexity is O(E Log V) where, E is the number of cities and V is the number of roads.
    Space Complexity: O(V).
@@ -57,7 +57,9 @@ The report is here -> https://github.com/roman808080/route_planner/blob/master/d
 
 ## Additional tasks
 I have not done any of them, but I think I will touch them eventually.
-UPDATE: I added prometheus without graphana. I have not added any mesurements yet.
+
+UPDATE: I added prometheus without graphana. I have added some mesurements, but they are not sufficient. I plan to add a library (this one https://pythonawesome.com/prometheus-exporter-for-starlette-and-fastapi/ or this one https://pythonawesome.com/instrument-your-fastapi-app/) to speed up the development process. Otherwise I need to override default behaviour for capturing HTTPExceptions. After this I plant to add Grafana docker container and integrate it with prometheus (Of cource, I am not sure when it will be done).
+
 
 
 ## Additional notes (or minuses and disadvantages)
