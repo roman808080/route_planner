@@ -54,5 +54,10 @@ services:
     image: grafana/grafana-oss
     ports:
       - 3000:3000
+    volumes:
+      - grafana-storage:/var/lib/grafana
     depends_on:
       - prometheus
+
+volumes:
+  grafana-storage:
