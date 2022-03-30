@@ -47,3 +47,10 @@ services:
     command: --web.enable-lifecycle --config.file=/etc/prometheus/prometheus.yml
     depends_on:
       - api
+
+  grafana:
+    image: grafana/grafana-oss
+    ports:
+      - 3000:3000
+    depends_on:
+      - prometheus
