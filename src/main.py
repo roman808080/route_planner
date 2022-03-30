@@ -1,31 +1,30 @@
 from fastapi import FastAPI
-from prometheus_client import start_http_server
+from starlette_exporter import PrometheusMiddleware, handle_metrics
 
 from models import RouteRequest, RouteResponse
 
 from db import db_manager
 from utils import raise_http_404_non_existing_node, raise_http_404_non_existing_road
 from dijkstra_adapter import DijkstraAdapter, NonExistingNode, RouteDoesNotExist
-from prometheus_measurements import middleware_calculate_requests, middleware_calculate_unhandled_exceptions
 
 import admin_router
 
+APPLICATION_DEFAULT_PORT = 8000
+APPLICATION_NAME = "api"
+
 app = FastAPI()
 
-app.middleware("http")(middleware_calculate_requests)
-app.middleware("http")(middleware_calculate_unhandled_exceptions)
+app.add_middleware(PrometheusMiddleware, app_name=APPLICATION_NAME,
+                   group_paths=True, prefix=APPLICATION_NAME)
 
+app.add_route("/metrics", handle_metrics)
 app.include_router(admin_router.router)
-
-APPLICATION_DEFAULT_PORT = 8000
-PROMETHEUS_DEFAULT_PORT = 8001
 
 
 @app.on_event("startup")
 async def startup():
     """Executed on server's startup"""
     await db_manager.up()
-    start_http_server(PROMETHEUS_DEFAULT_PORT)
 
 
 @app.on_event("shutdown")
