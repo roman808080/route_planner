@@ -10,3 +10,4 @@ databases[sqlite]
 asyncpg
 psycopg2-binary
 prometheus-client
+starlette_exporter
